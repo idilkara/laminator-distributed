@@ -50,7 +50,24 @@ def process_census(path="./data/adult.data"):
     )
     return X_train.to_numpy(), y_train.to_numpy(), X_test.to_numpy(), y_test.to_numpy()
 
+#--To ensure that model is EXACTLY the same as worker side--
+def parse_model_string(model_string):
+    blocks = model_string.split(';')
+    for block in blocks:
+        split = block.split(':')
+        layer_name = split[0]
+        # translate layer name into nn.layer
+        layer_function = None #nn.Linear
+        if(layer_name=="LinearNet"):
+            layer_function=nn.Linear
+        layer_sizes = np.fromstring(split[1].strip('[]'), dtype=int, sep=',')
+        layers = []
+        for i in range(len(layer_sizes) - 1):
+            in_features = layer_sizes[i]
+            out_features = layer_sizes[i + 1]
+            layers.append(layer_function(in_features, out_features))
 
+    return nn.Sequential(*layers)
 
 # ---------- Simple Neural Net ----------
 class Net(nn.Module):
@@ -122,8 +139,9 @@ def train(cfg: Config):
   
 
     # Initialize model
-    model = LinearNet([128, 256, 128])   # you can tweak sizes
+    # model = LinearNet([128, 256, 128])   # you can tweak sizes
     model_string = "LinearNet:[128, 256, 128]" # For larger models maybe assume they have models.py file? 
+    model = parse_model_string(model_string)
 
     print(f"Coordinator started with {cfg.num_workers} workers. Data: X={X_train.shape}, y={y_train.shape}")
 

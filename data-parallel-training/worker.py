@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import zmq
 import time, random
-import np
+import numpy as np
 
 TASK_ENDPOINT = "tcp://coordinator:5557"
 RESULT_ENDPOINT = "tcp://coordinator:5558"
@@ -30,7 +30,7 @@ def parse_model_string(model_string):
         layer_function = None #nn.Linear
         if(layer_name=="LinearNet"):
             layer_function=nn.Linear
-        layer_sizes = np.from_string(split[1].strip('[]'), dtype=int, sep=',')
+        layer_sizes = np.fromstring(split[1].strip('[]'), dtype=int, sep=',')
         layers = []
         for i in range(len(layer_sizes) - 1):
             in_features = layer_sizes[i]
