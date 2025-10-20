@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import zmq
 import time, random
 import numpy as np
+from models import ModelHandler
+
 
 TASK_ENDPOINT = "tcp://coordinator:5557"
 RESULT_ENDPOINT = "tcp://coordinator:5558"
@@ -18,26 +20,8 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         return torch.sigmoid(self.fc2(x))
 
-from models import LinearNet
 
 
-def parse_model_string(model_string):
-    blocks = model_string.split(';')
-    for block in blocks:
-        split = block.split(':')
-        layer_name = split[0]
-        # translate layer name into nn.layer
-        layer_function = None #nn.Linear
-        if(layer_name=="LinearNet"):
-            layer_function=nn.Linear
-        layer_sizes = np.fromstring(split[1].strip('[]'), dtype=int, sep=',')
-        layers = []
-        for i in range(len(layer_sizes) - 1):
-            in_features = layer_sizes[i]
-            out_features = layer_sizes[i + 1]
-            layers.append(layer_function(in_features, out_features))
-
-    return nn.Sequential(*layers)
 
 
 def compute_grad_and_loss(task):
@@ -50,8 +34,9 @@ def compute_grad_and_loss(task):
     # hash initial weights
     # hash training data
 
-    # model = LinearNet([128, 256, 128]) # Have this be sent over as well. AS binary object or text based (like JSON or XML) and built on worker end
-    model=parse_model_string(model_string)
+    model=ModelHandler.parse_model_string(model_string)
+    assert model != -1
+
     model.load_state_dict(state_dict)
     model.train()
 

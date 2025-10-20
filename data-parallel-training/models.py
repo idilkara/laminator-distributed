@@ -11,7 +11,8 @@
 # limitations under the License.
 
 import torch
-import torch.nn as nn 
+import torch.nn as nn
+import json 
 
 cfg = {
     'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
@@ -94,7 +95,35 @@ class LinearNet(nn.Module):
     def forward(self, x: torch.Tensor):
         hidden_out = self.features(x)
         return self.classifier(hidden_out)
-    
+
+
+class CustomizableLinearNet(nn.Module):
+    def __init__(self, hidden_layer_sizes=[128, 256, 128], input_dim=93, output_dim=2, activation="tanh", flatten=True):
+        super().__init__()
+        layers = []
+        if flatten:
+            layers.append(nn.Flatten())
+
+        activ_fn = {
+            "tanh": nn.Tanh,
+            "relu": nn.ReLU,
+            "sigmoid": nn.Sigmoid
+        }[activation]
+
+        for i, hidden_size in enumerate(hidden_layer_sizes):
+            in_features = input_dim if i == 0 else hidden_layer_sizes[i - 1]
+            layers.append(nn.Linear(in_features, hidden_size))
+            layers.append(activ_fn())
+
+        self.features = nn.Sequential(*layers)
+        self.classifier = nn.Linear(hidden_layer_sizes[-1], output_dim)
+
+    def forward(self, x):
+        hidden_out = self.features(x)
+        return self.classifier(hidden_out)
+
+
+
 class SentimentRNN(nn.Module):
     def __init__(self,args,no_layers,vocab_size,hidden_dim,embedding_dim,output_dim,drop_prob=0.5):
         super(SentimentRNN,self).__init__()
@@ -139,3 +168,14 @@ class SentimentRNN(nn.Module):
         c0 = torch.zeros((self.no_layers,batch_size,self.hidden_dim)).to(self.args.device)
         hidden = (h0,c0)
         return hidden
+
+class ModelHandler:
+    #-------Construct model from JSON representation--------------
+    @staticmethod
+    def parse_model_string(model_string):
+        config = json.loads(model_string)
+        if(config["model_type"] == "CustomizableLinearNet"):
+            return CustomizableLinearNet(**config["params"])
+        else:
+            print("Unsupported model type: ", config["model_type"])
+            return -1
