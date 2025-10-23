@@ -4,11 +4,10 @@ from dataclasses import dataclass
 import torch, numpy as np, random, os
 import pandas as pd
 import zmq
-
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-  # 
-from models import LinearNet
+
+from models import ModelHandler
 
 TASK_ENDPOINT = "tcp://*:5557"
 RESULT_ENDPOINT = "tcp://*:5558"
@@ -50,8 +49,6 @@ def process_census(path="./data/adult.data"):
     )
     return X_train.to_numpy(), y_train.to_numpy(), X_test.to_numpy(), y_test.to_numpy()
 
-
-
 # ---------- Simple Neural Net ----------
 class Net(nn.Module):
     def __init__(self, input_dim, hidden_dim=128):
@@ -73,11 +70,12 @@ def batches_for_workers(X, y, num_workers, rng):
         yield wid, X[chunk_idx], y[chunk_idx]
 
 
-def send_task(sender, worker_id, Xb, yb, model, lr, epoch):
+def send_task(sender, worker_id, Xb, yb, model_string, model, lr, epoch):
     task = {
         "worker_id": worker_id,
         "X": Xb.astype(np.float32).tolist(),
         "y": yb.astype(np.float32).tolist(),
+        "architecture": model_string,
         "weights": model.state_dict(),   # <-- full NN state 
         "lr": float(lr),
         "epoch": int(epoch),
@@ -121,14 +119,30 @@ def train(cfg: Config):
   
 
     # Initialize model
-    model = LinearNet([128, 256, 128])   # you can tweak sizes
+    # model = LinearNet([128, 256, 128])   # you can tweak sizes 
+    model_string = '''
+    {
+        "model_type": "CustomizableLinearNet",
+        "params": {
+            "hidden_layer_sizes": [128, 256, 128],
+            "input_dim": 93,
+            "output_dim": 2,
+            "activation": "tanh",
+            "flatten": true
+        }
+    }
+    '''
+
+    # ASSUMPTION: worker has models.py file. This can be easily changed later but JSON strings will get ugly
+    model = ModelHandler.parse_model_string(model_string) # To ensure that model is EXACTLY the same as worker side
+    assert model != -1
 
     print(f"Coordinator started with {cfg.num_workers} workers. Data: X={X_train.shape}, y={y_train.shape}")
 
     for epoch in range(cfg.epochs):
         t0 = time.time()
         for wid, Xb, yb in batches_for_workers(X_train, y_train, cfg.num_workers, rng):
-            send_task(task_out, wid, Xb, yb, model, cfg.lr, epoch)
+            send_task(task_out, wid, Xb, yb, model_string, model, cfg.lr, epoch)
 
         avg_grads, avg_loss = recv_results(results_in, cfg.num_workers)
 

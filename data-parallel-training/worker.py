@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import zmq
 import time, random
+import numpy as np
+from models import ModelHandler
+
 
 TASK_ENDPOINT = "tcp://coordinator:5557"
 RESULT_ENDPOINT = "tcp://coordinator:5558"
@@ -17,14 +20,23 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         return torch.sigmoid(self.fc2(x))
 
-from models import LinearNet
+
+
+
 
 def compute_grad_and_loss(task):
     X = torch.tensor(task["X"], dtype=torch.float32)
     y = torch.tensor(task["y"], dtype=torch.long)  # classification labels
     state_dict = task["weights"]
+    model_string = task["architecture"]
 
-    model = LinearNet([128, 256, 128])
+    # hash architecture
+    # hash initial weights
+    # hash training data
+
+    model=ModelHandler.parse_model_string(model_string)
+    assert model != -1
+
     model.load_state_dict(state_dict)
     model.train()
 
@@ -35,7 +47,10 @@ def compute_grad_and_loss(task):
     loss.backward()
 
     grads = {name: p.grad.clone().numpy() for name, p in model.named_parameters()}
-    return grads, float(loss.item()), X.shape[0]
+
+    # hash grads
+
+    return grads, float(loss.item()), X.shape[0] # also return hashes
 
 def main():
     ctx = zmq.Context()
@@ -55,6 +70,9 @@ def main():
             "loss": loss,
             "n": n,
         })
+        # After the computation is complete, a hash of the output is incorporated into the user data field of an SGX report, which is then
+        # used to obtain a DCAP quote [ 28 ] that can be verified by remote parties. This output takes the form of a JSON string representing
+        # a fragment of the model card metadata4, where a model is named with the hash of its file.
 
 if __name__ == "__main__":
     main()
