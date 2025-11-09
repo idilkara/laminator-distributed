@@ -3,6 +3,7 @@ import argparse
 import time
 from dataclasses import dataclass
 import os, random
+import json
 import numpy as np
 import torch
 import torch.nn as nn  # noqa: F401 (kept if your models import needs it)
@@ -10,91 +11,36 @@ import zmq
 
 from models import ModelHandler
 from data_preprocess import process_census
-from training import batches_for_workers
+from training import batches_for_workers, _avg_grads_and_loss
 
-from auth import coordinator_handle_handshake, sign_envelope, verify_envelope
+from auth import sign_message, verify_signature
 
-HANDSHAKE_ENDPOINT = "tcp://*:5556"
-TASK_ENDPOINT      = "tcp://*:5557"
-RESULT_ENDPOINT    = "tcp://*:5558"
-
-
-@dataclass
-class Config:
-    num_workers: int
-    epochs: int = 15
-    lr: float = 0.1
-    seed: int = 42
-
-
-def _avg_grads_and_loss(grads_list, counts_list, losses_list):
-    """
-    grads_list: list[dict[param_name -> list[float]]]  (JSON from workers)
-    counts_list: list[int]  (per-worker number of samples)
-    losses_list: list[float]
-
-    Returns:
-      avg_grads: dict[param_name -> torch.Tensor]
-      avg_loss: float (weighted by counts)
-    """
-    if not grads_list:
-        return {}, 0.0
-
-    # Union of param names across workers
-    param_names = set()
-    for gd in grads_list:
-        param_names.update(gd.keys())
-
-    total_n = float(sum(int(n) for n in counts_list))
-    if total_n <= 0:
-        total_n = 1.0
-
-    # Weighted average of grads by sample count
-    avg_grads = {}
-    for name in sorted(param_names):
-        acc = None
-        for gd, n in zip(grads_list, counts_list):
-            if name not in gd:
-                continue
-            g = torch.tensor(gd[name], dtype=torch.float32)
-            weight = float(n) / total_n
-            acc = g * weight if acc is None else acc + g * weight
-        if acc is None:
-            # If no worker provided this param (shouldn't happen), set zeros
-            acc = torch.tensor(0.0)
-        avg_grads[name] = acc
-
-    # Weighted average loss
-    wloss = 0.0
-    for n, l in zip(counts_list, losses_list):
-        wloss += float(l) * (float(n) / total_n)
-    return avg_grads, float(wloss)
+# Load CoordinatorConfig to read default endpoints and key paths
+from config import CoordinatorConfig
 
 
 # ---------- Training Loop ----------
-def train(cfg: Config):
+def train(cfg: CoordinatorConfig):
     ctx = zmq.Context.instance()
 
     # ---- handshake server (REP) ----
-    hs_rep = ctx.socket(zmq.REP); hs_rep.bind(HANDSHAKE_ENDPOINT)
+    hs_rep = ctx.socket(zmq.REP); hs_rep.bind(cfg.HANDSHAKE_ENDPOINT)
     session_keys = {}  # wid -> bytes
 
     # ---- data sockets ----
     # Use ROUTER so we can address tasks to specific workers (by identity).
-    task_out = ctx.socket(zmq.ROUTER);  task_out.bind(TASK_ENDPOINT)
+    task_out = ctx.socket(zmq.ROUTER);  task_out.bind(cfg.TASK_ENDPOINT)
     # Results can still be collected via PULL from workers' PUSH sockets
-    results_in = ctx.socket(zmq.PULL); results_in.bind(RESULT_ENDPOINT)
+    results_in = ctx.socket(zmq.PULL); results_in.bind(cfg.RESULT_ENDPOINT)
 
-    prov_secret = os.environ.get("HMAC_PROVISIONING_SECRET", "").encode()
-    if len(prov_secret) < 16:
-        raise RuntimeError("Set strong HMAC_PROVISIONING_SECRET in the environment")
-    print("Coordinator started with handshake server.", flush=True)
+    # Using RSA-based handshake (keys in ./keys/*.pem)
+    print("Coordinator started with RSA handshake server.", flush=True)
 
-    # Data
+    # Data preparation
     X_train, y_train, X_test, y_test = process_census()
-    rng = np.random.default_rng(cfg.seed)
+    rng = np.random.default_rng(cfg.SEED)
 
-    # Initialize model (exactly as your JSON)
+    # Initialize model (JSON)
     model_string = '''
     {
         "model_type": "CustomizableLinearNet",
@@ -111,38 +57,18 @@ def train(cfg: Config):
     assert model != -1
 
     print(
-        f"Coordinator started with {cfg.num_workers} workers. "
+        f"Coordinator started with {cfg.NUM_WORKERS} workers. "
         f"Data: X={X_train.shape}, y={y_train.shape}",
         flush=True
     )
 
-    print(f"Coordinator up. Waiting for {cfg.num_workers} workers to handshake…", flush=True)
-    seen_nonces_results = set()
-
-    # --- Accept N successful handshakes ---
-    while len(session_keys) < cfg.num_workers:
-        msg = hs_rep.recv_json()
-        reply, ready = coordinator_handle_handshake(msg, prov_secret)
-        hs_rep.send_json(reply)
-        if ready:
-            wid, sk = ready
-            session_keys[str(wid)] = sk
-            print(f"Session established with worker {wid}", flush=True)
-
-    print("All workers authenticated. Starting training.", flush=True)
-
-
-    partition_start_idx = 0
-    partition_size = X_train.shape[0] // cfg.epochs
-    print(f"Each epoch will use data partition of size {partition_size}", flush=True)
-
     
     # ---------- Training epochs ----------
-    for epoch in range(cfg.epochs):
+    for epoch in range(cfg.EPOCHS):
         t0 = time.time()
 
         # Send tasks securely
-        for wid, Xb, yb in batches_for_workers(X_train[partition_start_idx:partition_start_idx + partition_size], y_train[partition_start_idx:partition_start_idx + partition_size], cfg.num_workers, rng):
+        for wid, Xb, yb in batches_for_workers(X_train, y_train, cfg.NUM_WORKERS, rng):
             wid_str = str(wid)
             payload = {
                 "worker_id": wid_str,
@@ -151,28 +77,63 @@ def train(cfg: Config):
                 # Workers expect 'architecture' and 'weights'
                 "architecture": model_string,
                 "weights": {k: v.cpu().numpy().tolist() for k, v in model.state_dict().items()},
-                "lr": float(cfg.lr),
+                "lr": float(cfg.LR),
                 "epoch": int(epoch)
             }
-            env = sign_envelope(session_keys[wid_str], wid_str, payload)
+
+            # Serialize and sign the payload, then send an envelope {message, signature}
+            msg_str = json.dumps(payload, separators=(",",":"), sort_keys=True)
+            sig = sign_message(msg_str.encode(), cfg.PRIVATE_KEY_PATH)
+            signed_envelope = {"message": msg_str, "signature": sig.hex()}
+
+            env = {"wid": wid, "payload": signed_envelope}
+
             # Router expects [identity, payload]; send the JSON payload as a
             # single frame. Worker DEALER socket (with identity set) will
             # receive only the payload frame.
-            import json as _json
-            task_out.send_multipart([wid_str.encode(), _json.dumps(env, separators=(",",":"), sort_keys=True).encode()])
-        partition_start_idx += partition_size
+            task_out.send_multipart([wid_str.encode(), json.dumps(env, separators=(",",":"), sort_keys=True).encode()])
+
+    
         # Receive results securely
         grads_accum = []
         losses = []
         counts = []
-        for _ in range(cfg.num_workers):
+        for _ in range(cfg.NUM_WORKERS):
             env = results_in.recv_json()
             wid = env["wid"]
-            payload = verify_envelope(env, session_keys[wid], seen_nonces=seen_nonces_results)
+            payload_env = env.get("payload")
+            if not isinstance(payload_env, dict) or "message" not in payload_env or "signature" not in payload_env:
+                print(f"Coordinator: malformed result envelope from worker {wid}", flush=True)
+                continue
 
-            grads_accum.append(payload["grads"])  # dict[name -> list]
-            losses.append(payload["loss"])
-            counts.append(payload["n"])
+            msg_str = payload_env["message"]
+            try:
+                sig_bytes = bytes.fromhex(payload_env["signature"])
+            except Exception:
+                print(f"Coordinator: invalid signature encoding from worker {wid}", flush=True)
+                continue
+
+            # Look up worker public key and verify
+            try:
+                worker_pub = cfg.WORKER_KEY_PATHS[int(wid)]
+            except Exception:
+                print(f"Coordinator: no public key for worker {wid}", flush=True)
+                continue
+
+            if not verify_signature(msg_str.encode(), sig_bytes, worker_pub):
+                print(f"Coordinator: signature verification failed for worker {wid}; ignoring", flush=True)
+                continue
+
+            # Parse the worker's inner message
+            try:
+                worker_payload = json.loads(msg_str)
+            except Exception:
+                print(f"Coordinator: failed to parse worker {wid} message JSON", flush=True)
+                continue
+
+            grads_accum.append(worker_payload["grads"])  # dict[name -> list]
+            losses.append(worker_payload["loss"])
+            counts.append(worker_payload["n"])
 
         # Average and apply gradients
         avg_grads, avg_loss = _avg_grads_and_loss(grads_accum, counts, losses)
@@ -181,7 +142,7 @@ def train(cfg: Config):
                 if name not in avg_grads:
                     continue
                 g = avg_grads[name].to(param.device, dtype=param.dtype)
-                param -= cfg.lr * g
+                param -= cfg.LR * g
 
         dt = time.time() - t0
 
@@ -194,7 +155,7 @@ def train(cfg: Config):
         acc = float(np.mean(y_pred == y_test))
 
         print(
-            f"[Epoch {epoch+1:02d}/{cfg.epochs}] loss={avg_loss:.4f} | time={dt:.2f}s | Acc={acc:.4f}",
+            f"[Epoch {epoch+1:02d}/{cfg.EPOCHS}] loss={avg_loss:.4f} | time={dt:.2f}s | Acc={acc:.4f}",
             flush=True
         )
 
@@ -206,6 +167,20 @@ def train(cfg: Config):
         y_pred = torch.argmax(logits, dim=1).cpu().numpy()
     acc = float(np.mean(y_pred == y_test))
     print(f"Final test Accuracy: {acc:.4f}", flush=True)
+    # Send SHUTDOWN control message to all workers so they can exit cleanly.
+    try:
+        shutdown_payload = {"control": "SHUTDOWN"}
+        msg_str = json.dumps(shutdown_payload, separators=(",",":"), sort_keys=True)
+        sig = sign_message(msg_str.encode(), cfg.PRIVATE_KEY_PATH)
+        signed_envelope = {"message": msg_str, "signature": sig.hex()}
+        for wid in range(cfg.NUM_WORKERS):
+            wid_str = str(wid)
+            env = {"wid": wid_str, "payload": signed_envelope}
+            # Send as multipart [identity, payload] so worker DEALER receives payload frame
+            task_out.send_multipart([wid_str.encode(), json.dumps(env, separators=(",",":"), sort_keys=True).encode()])
+        print("Coordinator: sent SHUTDOWN to all workers", flush=True)
+    except Exception:
+        print("Coordinator: failed to send SHUTDOWN to workers", flush=True)
 
 
 def main():
@@ -227,7 +202,13 @@ def main():
     torch.backends.cudnn.benchmark = False
     torch.use_deterministic_algorithms(True)
 
-    cfg = Config(num_workers=args.num_workers, epochs=args.epochs, lr=args.lr, seed=seed)
+    # Build a CoordinatorConfig instance and copy runtime parameters onto it.
+    cfg = CoordinatorConfig()
+    # CoordinatorConfig already has .private_key_path and .worker_key_paths set.
+    cfg.NUM_WORKERS = args.num_workers
+    cfg.EPOCHS = args.epochs
+    cfg.LR = args.lr
+    cfg.SEED = seed
     train(cfg)
 
 

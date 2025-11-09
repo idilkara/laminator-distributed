@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install python packages
 COPY reqs.txt .
-RUN pip install --no-cache-dir -r reqs.txt
+RUN pip install -r reqs.txt
 
 # Copy code
 COPY . /app

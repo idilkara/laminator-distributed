@@ -4,3 +4,4 @@ scikit-learn
 pyzmq
 scipy
 torch
+pycryptodome

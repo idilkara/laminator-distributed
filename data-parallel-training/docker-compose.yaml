@@ -6,14 +6,12 @@ services:
     container_name: coordinator
     command: >
       python ./coordinator/coordinator.py
-      --num-workers 4
+      --num-workers 2
       --epochs 10
       --lr 0.1
-    environment:
-      # shared secret for deriving HMAC session keys (MUST be identical for all)
-      HMAC_PROVISIONING_SECRET: "base64:replace_me_with_real_secret"
     volumes:
       - ./data:/app/data
+      - ./keys:/app/keys
     networks:
       - training-net
     ports:
@@ -27,7 +25,6 @@ services:
     command: python ./worker/worker.py
     environment:
       WORKER_ID: "0"
-      HMAC_PROVISIONING_SECRET: "base64:replace_me_with_real_secret"
     networks:
       - training-net
     depends_on:
@@ -39,35 +36,11 @@ services:
     command: python ./worker/worker.py
     environment:
       WORKER_ID: "1"
-      HMAC_PROVISIONING_SECRET: "base64:replace_me_with_real_secret"
     networks:
       - training-net
     depends_on:
       - coordinator
 
-  worker3:
-    build: .
-    container_name: worker3
-    command: python ./worker/worker.py
-    environment:
-      WORKER_ID: "2"
-      HMAC_PROVISIONING_SECRET: "base64:replace_me_with_real_secret"
-    networks:
-      - training-net
-    depends_on:
-      - coordinator
-
-  worker4:
-    build: .
-    container_name: worker4
-    command: python ./worker/worker.py
-    environment:
-      WORKER_ID: "3"
-      HMAC_PROVISIONING_SECRET: "base64:replace_me_with_real_secret"
-    networks:
-      - training-net
-    depends_on:
-      - coordinator
 
 networks:
   training-net:

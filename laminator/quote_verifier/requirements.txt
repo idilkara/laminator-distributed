@@ -1,4 +1,0 @@
-azure-security-attestation
-python-dotenv
-azure-identity
-requests

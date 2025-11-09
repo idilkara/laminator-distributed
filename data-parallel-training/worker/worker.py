@@ -2,46 +2,31 @@
 import os
 import time
 import random
+import json
 import torch
 import zmq
 import numpy as np
 from training import compute_grad_and_loss
-from auth import worker_start_handshake, sign_envelope, verify_envelope
+from auth import sign_message, verify_signature
+from config import WorkerConfig
+import sys
 
-HANDSHAKE_ENDPOINT = "tcp://coordinator:5556"
-TASK_ENDPOINT      = "tcp://coordinator:5557"
-RESULT_ENDPOINT    = "tcp://coordinator:5558"
 
-WORKER_ID = os.environ.get("WORKER_ID", "0")  # must be unique per worker
 
 
 def main():
     ctx = zmq.Context.instance()
 
-    # ---- Handshake (REQ/REP) ----
-    hs_req = ctx.socket(zmq.REQ)
-    hs_req.connect(HANDSHAKE_ENDPOINT)
 
-    def _send_req(obj): hs_req.send_json(obj)
-    def _recv_rep():    return hs_req.recv_json()
-
-    # provisioning secret must exist on worker
-    prov_secret = os.environ.get("HMAC_PROVISIONING_SECRET", "")
-    if len(prov_secret) < 16:
-        raise RuntimeError("Set HMAC_PROVISIONING_SECRET on worker (≥16 bytes)")
-
-    print(f"Worker {WORKER_ID}: starting handshake with coordinator...", flush=True)
-    session_key = worker_start_handshake(_send_req, _recv_rep, WORKER_ID)
-    print(f"Worker {WORKER_ID}: handshake complete. Session key established.", flush=True)
 
     # ---- Training sockets ----
     # Use DEALER and set our identity so the coordinator (ROUTER) can
     # address tasks specifically to this worker.
     receiver = ctx.socket(zmq.DEALER)
-    receiver.setsockopt(zmq.IDENTITY, WORKER_ID.encode())
-    receiver.connect(TASK_ENDPOINT)
+    receiver.setsockopt(zmq.IDENTITY, str(WorkerConfig.WORKER_ID).encode())
+    receiver.connect(WorkerConfig.TASK_ENDPOINT)
     sender = ctx.socket(zmq.PUSH)
-    sender.connect(RESULT_ENDPOINT)
+    sender.connect(WorkerConfig.RESULT_ENDPOINT)
 
     seen_nonces_tasks = set()
     time.sleep(1)
@@ -50,8 +35,64 @@ def main():
     while True:
         # Receive and verify the task envelope
         env = receiver.recv_json()
-        task = verify_envelope(env, session_key, seen_nonces=seen_nonces_tasks)
-        print(f"Worker {WORKER_ID}: received task for epoch {task['epoch']}", flush=True)
+
+        # Expect envelope like: {"wid": <wid>, "payload": {"message": <json str>, "signature": <hex str>}}
+        payload_env = env.get("payload")
+        if not isinstance(payload_env, dict) or "message" not in payload_env or "signature" not in payload_env:
+            print(f"Worker {WorkerConfig.WORKER_ID}: malformed envelope from coordinator", flush=True)
+            continue
+
+        message_json = payload_env["message"]
+        sig_hex = payload_env["signature"]
+        try:
+            sig_bytes = bytes.fromhex(sig_hex)
+        except Exception:
+            print(f"Worker {WorkerConfig.WORKER_ID}: invalid signature encoding", flush=True)
+            continue
+
+        # Verify signature using coordinator's public key
+        coord_pub = WorkerConfig.COORDINATOR_PUBLIC_KEY_PATH
+        if not verify_signature(message_json.encode(), sig_bytes, coord_pub):
+            print(f"Worker {WorkerConfig.WORKER_ID}: signature verification failed for incoming task; ignoring", flush=True)
+            continue
+
+        # Parse inner task message
+        try:
+            task = json.loads(message_json)
+        except Exception:
+            print(f"Worker {WorkerConfig.WORKER_ID}: failed to parse task JSON", flush=True)
+            continue
+        # Handle control/shutdown messages from coordinator.
+        # Accept several common forms so coordinator can send a simple
+        # control envelope like {"control": "SHUTDOWN"} or a bare
+        # string "SHUTDOWN".
+        is_shutdown = False
+        try:
+            if isinstance(task, dict):
+                # common keys that might indicate shutdown
+                if task.get("control") == "SHUTDOWN" or task.get("command") == "SHUTDOWN" or task.get("type") == "SHUTDOWN":
+                    is_shutdown = True
+                # also allow explicit boolean flag
+                if task.get("shutdown") is True:
+                    is_shutdown = True
+            else:
+                # message could be a plain string
+                if isinstance(task, str) and task.upper() == "SHUTDOWN":
+                    is_shutdown = True
+        except Exception:
+            is_shutdown = False
+
+        if is_shutdown:
+            print(f"Worker {WorkerConfig.WORKER_ID}: received SHUTDOWN from coordinator; exiting.", flush=True)
+            try:
+                # Close sockets and terminate context cleanly
+                receiver.close(linger=0)
+                sender.close(linger=0)
+                ctx.term()
+            except Exception:
+                pass
+            sys.exit(0)
+        print(f"Worker {WorkerConfig.WORKER_ID}: received task for epoch {task['epoch']}", flush=True)
         print(len(task['X']), "samples")
         # Compute gradients and loss
         grads, loss, n = compute_grad_and_loss(task)
@@ -78,16 +119,19 @@ def main():
                     grads_json[k] = str(v)
 
         payload = {
-            "worker_id": WORKER_ID,
+            "worker_id": WorkerConfig.WORKER_ID,
             "grads": grads_json,
             "loss": float(loss),
             "n": int(n),
         }
 
-        # Sign and send back the result
-        env_out = sign_envelope(session_key, WORKER_ID, payload)
-        sender.send_json(env_out)
-        print(f"Worker {WORKER_ID}: sent results to coordinator.", flush=True)
+        # Sign and send back the result. We send an envelope with message + signature (hex)
+        result_msg = json.dumps(payload, separators=(",",":"), sort_keys=True)
+        sig = sign_message(result_msg.encode(), WorkerConfig.PRIVATE_KEY_PATH)
+        result_envelope = {"message": result_msg, "signature": sig.hex()}
+        out_env = {"wid": WorkerConfig.WORKER_ID, "payload": result_envelope}
+        sender.send_json(out_env)
+        print(f"Worker {WorkerConfig.WORKER_ID}: sent results to coordinator.", flush=True)
 
 
 if __name__ == "__main__":
