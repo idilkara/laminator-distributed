@@ -7,29 +7,67 @@ import torch
 import zmq
 import numpy as np
 from training import compute_grad_and_loss
-from auth import sign_message, verify_signature
+from auth import sign_message, verify_signature, verify_handshake_offer, create_handshake_response, sign_envelope, verify_envelope
 from config import WorkerConfig
 import sys
 
+#sleep
+import time
 
+time.sleep(2)
 
 
 def main():
     ctx = zmq.Context.instance()
 
-
-
     # ---- Training sockets ----
-    # Use DEALER and set our identity so the coordinator (ROUTER) can
-    # address tasks specifically to this worker.
     receiver = ctx.socket(zmq.DEALER)
     receiver.setsockopt(zmq.IDENTITY, str(WorkerConfig.WORKER_ID).encode())
     receiver.connect(WorkerConfig.TASK_ENDPOINT)
+
     sender = ctx.socket(zmq.PUSH)
     sender.connect(WorkerConfig.RESULT_ENDPOINT)
 
+    # ---- Handshake ----
+    # Step 1: Send HELLO so coordinator’s ROUTER learns our identity
+    hello = {"type": "hello", "wid": WorkerConfig.WORKER_ID}
+    receiver.send_json(hello)
+    print(f"Worker {WorkerConfig.WORKER_ID}: sent HELLO to coordinator", flush=True)
+
+    # Step 2: Wait for handshake offer from coordinator (ROUTER → DEALER)
+    try:
+        offer_env = receiver.recv_json()
+    except Exception as e:
+        print(f"Worker {WorkerConfig.WORKER_ID}: failed to receive handshake offer ({e})", flush=True)
+        sys.exit(1)
+
+    offer = offer_env.get("handshake")
+    if not offer:
+        print(f"Worker {WorkerConfig.WORKER_ID}: no handshake offer received", flush=True)
+        sys.exit(1)
+
+    # Step 3: Verify coordinator’s signature
+    coord_pub = WorkerConfig.COORDINATOR_PUBLIC_KEY_PATH
+    if not verify_handshake_offer(offer, coord_pub):
+        print(f"Worker {WorkerConfig.WORKER_ID}: invalid handshake offer signature", flush=True)
+        sys.exit(1)
+
+    # Step 4: Create and send signed response via PUSH → PULL
+    response = create_handshake_response(
+        offer, str(WorkerConfig.WORKER_ID), WorkerConfig.PRIVATE_KEY_PATH
+    )
+    out = {"wid": WorkerConfig.WORKER_ID, "handshake_response": response}
+    sender.send_json(out)
+    print(f"Worker {WorkerConfig.WORKER_ID}: sent handshake response to coordinator", flush=True)
+
+    # Save session nonce from offer for later message signing/verification
+    session_nonce = offer.get("nonce")
+    print(f"Worker {WorkerConfig.WORKER_ID}: saved session_id={offer.get('session_id')} nonce={session_nonce}", flush=True)
+
+    # Step 5: Continue normal operation
     seen_nonces_tasks = set()
     time.sleep(1)
+
 
     # ---- Main loop ----
     while True:
@@ -42,26 +80,18 @@ def main():
             print(f"Worker {WorkerConfig.WORKER_ID}: malformed envelope from coordinator", flush=True)
             continue
 
-        message_json = payload_env["message"]
-        sig_hex = payload_env["signature"]
-        try:
-            sig_bytes = bytes.fromhex(sig_hex)
-        except Exception:
-            print(f"Worker {WorkerConfig.WORKER_ID}: invalid signature encoding", flush=True)
-            continue
-
-        # Verify signature using coordinator's public key
+        # Verify envelope using stored session nonce
         coord_pub = WorkerConfig.COORDINATOR_PUBLIC_KEY_PATH
-        if not verify_signature(message_json.encode(), sig_bytes, coord_pub):
-            print(f"Worker {WorkerConfig.WORKER_ID}: signature verification failed for incoming task; ignoring", flush=True)
+        if not session_nonce:
+            print(f"Worker {WorkerConfig.WORKER_ID}: no session nonce; ignoring inbound task", flush=True)
+            continue
+        if not verify_envelope(payload_env, session_nonce, coord_pub):
+            print(f"Worker {WorkerConfig.WORKER_ID}: envelope verification failed; ignoring", flush=True)
             continue
 
-        # Parse inner task message
-        try:
-            task = json.loads(message_json)
-        except Exception:
-            print(f"Worker {WorkerConfig.WORKER_ID}: failed to parse task JSON", flush=True)
-            continue
+        # Extract task payload and remove nonce
+        task = dict(payload_env["message"]) if isinstance(payload_env["message"], dict) else {}
+        task.pop("nonce", None)
         # Handle control/shutdown messages from coordinator.
         # Accept several common forms so coordinator can send a simple
         # control envelope like {"control": "SHUTDOWN"} or a bare
@@ -125,10 +155,11 @@ def main():
             "n": int(n),
         }
 
-        # Sign and send back the result. We send an envelope with message + signature (hex)
-        result_msg = json.dumps(payload, separators=(",",":"), sort_keys=True)
-        sig = sign_message(result_msg.encode(), WorkerConfig.PRIVATE_KEY_PATH)
-        result_envelope = {"message": result_msg, "signature": sig.hex()}
+        # Sign and send back the result using the established session nonce
+        if not session_nonce:
+            print(f"Worker {WorkerConfig.WORKER_ID}: no session nonce when sending results; dropping", flush=True)
+            continue
+        result_envelope = sign_envelope(payload, session_nonce, WorkerConfig.PRIVATE_KEY_PATH)
         out_env = {"wid": WorkerConfig.WORKER_ID, "payload": result_envelope}
         sender.send_json(out_env)
         print(f"Worker {WorkerConfig.WORKER_ID}: sent results to coordinator.", flush=True)
