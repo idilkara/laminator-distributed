@@ -10,6 +10,7 @@ from training import compute_grad_and_loss
 from auth import sign_message, verify_signature, verify_handshake_offer, create_handshake_response, sign_envelope, verify_envelope
 from config import WorkerConfig
 import sys
+import hashlib
 
 #sleep
 import time
@@ -124,8 +125,9 @@ def main():
             sys.exit(0)
         print(f"Worker {WorkerConfig.WORKER_ID}: received task for epoch {task['epoch']}", flush=True)
         print(len(task['X']), "samples")
-        # Compute gradients and loss
-        grads, loss, n = compute_grad_and_loss(task)
+        # Compute gradients, loss and obtain updated (trained) weights
+        # compute_grad_and_loss now returns (grads, loss, n, updated_state_dict)
+        grads, loss, n, updated_state = compute_grad_and_loss(task)
         time.sleep(random.uniform(0.05, 0.2))  # simulate variable workload
 
         # Convert gradients to JSON-serializable format. `grads` may contain
@@ -148,11 +150,52 @@ def main():
                 except Exception:
                     grads_json[k] = str(v)
 
+        # Compute required hashes per spec:
+        # H(DTr_i) -> hash of training data (X,y)
+        # H(MAr) -> hash of model architecture
+        # H(Me_init) -> hash of initial model weights (as sent in task)
+        # H(T) -> hash of training configuration (lr, epoch, etc.)
+        def _stable_json_hash(obj):
+            try:
+                j = json.dumps(obj, sort_keys=True, separators=(",",":"), default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
+            except Exception:
+                j = json.dumps(str(obj), sort_keys=True, separators=(",",":"))
+            return hashlib.sha256(j.encode()).hexdigest()
+
+        H_DTr = _stable_json_hash({"X": task.get("X"), "y": task.get("y")})
+        H_MAr = _stable_json_hash(task.get("architecture"))
+        H_Me_init = _stable_json_hash(task.get("weights"))
+        H_T = _stable_json_hash({"lr": task.get("lr"), "epoch": task.get("epoch")})
+
+        # Convert updated_state (trained weights) into JSON-serializable form
+        trained_weights_json = {}
+        for k, v in updated_state.items():
+            try:
+                if hasattr(v, "tolist"):
+                    trained_weights_json[k] = v.tolist()
+                else:
+                    trained_weights_json[k] = list(v)
+            except Exception:
+                try:
+                    trained_weights_json[k] = [float(x) for x in v]
+                except Exception:
+                    trained_weights_json[k] = str(v)
+
         payload = {
             "worker_id": WorkerConfig.WORKER_ID,
             "grads": grads_json,
             "loss": float(loss),
             "n": int(n),
+            # New fields per requested message format
+            "hashes": {
+                "H_DTr": H_DTr,
+                "H_MAr": H_MAr,
+                "H_Me_init": H_Me_init,
+                "H_T": H_T,
+            },
+            "epoch": int(task.get("epoch", -1)),
+            "worker_index": WorkerConfig.WORKER_ID,
+            "trained_weights": trained_weights_json,
         }
 
         # Sign and send back the result using the established session nonce

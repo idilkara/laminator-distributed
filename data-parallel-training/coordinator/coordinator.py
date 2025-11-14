@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn  # noqa: F401 (kept if your models import needs it)
 import zmq
+import hashlib
 
 from models import ModelHandler
 from data_preprocess import process_census
@@ -17,6 +18,21 @@ from auth import sign_message, verify_signature, create_handshake_offer, verify_
 
 # Load CoordinatorConfig to read default endpoints and key paths
 from config import CoordinatorConfig
+
+
+#verify if attestation from worker matches expected attestation
+def verfiy_attestation(attestation:dict, expected_attestation:dict) -> bool:
+    # Implement attestation verification logic here
+    # For example, compare expected values with received attestation
+    for key, expected_value in expected_attestation.items():
+        received_value = attestation.get(key)
+        if received_value != expected_value:
+            print(f"Attestation mismatch for {key}: expected {expected_value}, got {received_value}", flush=True)
+            return False
+    print("Attestation verified successfully.", flush=True)
+    return True
+
+
 
 
 # ---------- Training Loop ----------
@@ -151,8 +167,20 @@ def train(cfg: CoordinatorConfig):
     for epoch in range(cfg.EPOCHS):
         t0 = time.time()
 
+        # expected_hashes keeps the hashes we computed when sending each
+        # task so we can verify worker replies later in this epoch.
+        expected_hashes = {}
+
+        def _stable_json_hash(obj):
+            try:
+                j = json.dumps(obj, sort_keys=True, separators=(",",":"), default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
+            except Exception:
+                j = json.dumps(str(obj), sort_keys=True, separators=(",",":"))
+            return hashlib.sha256(j.encode()).hexdigest()
+
         # Send tasks securely
         for wid, Xb, yb in batches_for_workers(X_train, y_train, cfg.NUM_WORKERS, rng):
+            
             wid_str = str(wid)
             payload = {
                 "worker_id": wid_str,
@@ -163,6 +191,19 @@ def train(cfg: CoordinatorConfig):
                 "weights": {k: v.cpu().numpy().tolist() for k, v in model.state_dict().items()},
                 "lr": float(cfg.LR),
                 "epoch": int(epoch)
+            }
+
+            # Compute and store stable hashes for this task so we can verify
+            # worker responses later.
+            H_DTr = _stable_json_hash({"X": payload["X"], "y": payload["y"]})
+            H_MAr = _stable_json_hash(payload["architecture"])
+            H_Me_init = _stable_json_hash(payload["weights"])
+            H_T = _stable_json_hash({"lr": payload["lr"], "epoch": payload["epoch"]})
+            expected_hashes[wid_str] = {
+                "H_DTr": H_DTr,
+                "H_MAr": H_MAr,
+                "H_Me_init": H_Me_init,
+                "H_T": H_T,
             }
 
             # Serialize and sign the payload, include the session nonce in the signed structure
@@ -211,6 +252,30 @@ def train(cfg: CoordinatorConfig):
             worker_payload = dict(payload_env["message"])
             worker_payload.pop("nonce", None)
 
+            # Verify that the worker-provided hashes match what we sent.
+            expected = expected_hashes.get(str(wid))
+            received_hashes = worker_payload.get("hashes") or {}
+            if expected is None:
+                print(f"Coordinator: no expected hashes recorded for worker {wid}; ignoring result", flush=True)
+                continue
+
+            mismatch = False
+            for k, v in expected.items():
+                if received_hashes.get(k) != v:
+                    print(f"Coordinator: hash mismatch from worker {wid} for {k}: expected {v}, got {received_hashes.get(k)}", flush=True)
+                    mismatch = True
+            if mismatch:
+                print(f"Coordinator: ignoring result from worker {wid} due to hash mismatch", flush=True)
+                continue
+
+            # Hashes verified OK — log a concise confirmation and accept result
+            print(
+                f"Coordinator: hash verification PASSED for worker {wid} | "
+                f"H_DTr={expected['H_DTr'][:12]}..., H_MAr={expected['H_MAr'][:12]}..., H_Me_init={expected['H_Me_init'][:12]}..., H_T={expected['H_T'][:12]}...",
+                flush=True,
+            )
+
+            # Accept result
             grads_accum.append(worker_payload["grads"])  # dict[name -> list]
             losses.append(worker_payload["loss"])
             counts.append(worker_payload["n"])

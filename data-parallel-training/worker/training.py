@@ -87,6 +87,15 @@ def compute_grad_and_loss(task):
 
     grads = {name: p.grad.clone().numpy() for name, p in model.named_parameters()}
 
-    # hash grads
+    # perform a single SGD step using provided learning rate (if present)
+    lr = float(task.get("lr", 0.01))
+    with torch.no_grad():
+        for p in model.parameters():
+            if p.grad is None:
+                continue
+            p.add_( - lr * p.grad )
 
-    return grads, float(loss.item()), X.shape[0] # also return hashes
+    # collect updated weights as numpy arrays
+    updated_state = {name: p.detach().cpu().numpy() for name, p in model.named_parameters()}
+
+    return grads, float(loss.item()), X.shape[0], updated_state # also return updated model
