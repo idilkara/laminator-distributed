@@ -69,6 +69,12 @@ def main():
     seen_nonces_tasks = set()
     time.sleep(1)
 
+    # misbehavior counter (one-shot test). This copies the configured
+    # number of misbehaviors into a local counter we decrement on use.
+    misbehave_left = int(getattr(WorkerConfig, "MISBEHAVE_COUNT", 0))
+    if misbehave_left > 0:
+        print(f"Worker {WorkerConfig.WORKER_ID}: MISBEHAVE mode enabled for {misbehave_left} task(s)", flush=True)
+
 
     # ---- Main loop ----
     while True:
@@ -166,6 +172,18 @@ def main():
         H_MAr = _stable_json_hash(task.get("architecture"))
         H_Me_init = _stable_json_hash(task.get("weights"))
         H_T = _stable_json_hash({"lr": task.get("lr"), "epoch": task.get("epoch")})
+
+        # If we're configured to misbehave, corrupt one of the hashes so the
+        # coordinator will detect a mismatch. This simulates a buggy or
+        # malicious worker. We only do this for `misbehave_left` tasks.
+        if misbehave_left > 0:
+            # simple corruption: flip the first hex nibble to '0' so the
+            # SHA256 won't match. Log the event so it's visible in worker
+            # logs for tests.
+            old = H_Me_init
+            H_Me_init = ("0" * 64)
+            misbehave_left -= 1
+            print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting H_Me_init (was {old[:12]}...) -> {H_Me_init[:12]}...; remaining misbehave={misbehave_left}", flush=True)
 
         # Convert updated_state (trained weights) into JSON-serializable form
         trained_weights_json = {}

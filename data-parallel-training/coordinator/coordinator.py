@@ -61,6 +61,8 @@ def train(cfg: CoordinatorConfig):
 
     timeout_seconds = 15
     start = time.time()
+    # record handshake start time (covers HELLO/offer/response phases)
+    handshake_start = time.time()
 
     # ---------- Phase 1: wait for HELLO and send offer ----------
     while pending and (time.time() - start) < timeout_seconds:
@@ -134,10 +136,19 @@ def train(cfg: CoordinatorConfig):
     if pending:
         print(f"Coordinator: handshake timed out for workers {sorted(list(pending))}", flush=True)
 
+    # handshake end/time
+    handshake_end = time.time()
+    handshake_time = handshake_end - handshake_start
+    print(f"Coordinator: handshake phase completed in {handshake_time:.3f}s", flush=True)
 
 
-    # Data preparation
+
+    # Data preparation (measure time)
+    preprocess_start = time.time()
     X_train, y_train, X_test, y_test = process_census()
+    preprocess_end = time.time()
+    preprocess_time = preprocess_end - preprocess_start
+    print(f"Coordinator: data preprocessing completed in {preprocess_time:.3f}s", flush=True)
     rng = np.random.default_rng(cfg.SEED)
 
     # Initialize model (JSON)
@@ -162,10 +173,17 @@ def train(cfg: CoordinatorConfig):
         flush=True
     )
 
+    # Report structure: report[epoch][wid] = {"status": <str>, "notes": [<str>, ...]}
+    report = {}
+
     
     # ---------- Training epochs ----------
+    training_start = time.time()
     for epoch in range(cfg.EPOCHS):
         t0 = time.time()
+
+        # prepare a per-epoch report mapping
+        report.setdefault(epoch, {})
 
         # expected_hashes keeps the hashes we computed when sending each
         # task so we can verify worker replies later in this epoch.
@@ -180,7 +198,7 @@ def train(cfg: CoordinatorConfig):
 
         # Send tasks securely
         for wid, Xb, yb in batches_for_workers(X_train, y_train, cfg.NUM_WORKERS, rng):
-            
+
             wid_str = str(wid)
             payload = {
                 "worker_id": wid_str,
@@ -206,6 +224,9 @@ def train(cfg: CoordinatorConfig):
                 "H_T": H_T,
             }
 
+            # initialize per-worker report entry for this epoch
+            report[epoch].setdefault(wid_str, {"status": "pending", "notes": []})
+
             # Serialize and sign the payload, include the session nonce in the signed structure
             session_nonce = session_keys.get(wid_str)
             if not session_nonce:
@@ -230,22 +251,34 @@ def train(cfg: CoordinatorConfig):
             payload_env = env.get("payload")
             if not isinstance(payload_env, dict) or "message" not in payload_env or "signature" not in payload_env:
                 print(f"Coordinator: malformed result envelope from worker {wid}", flush=True)
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "malformed", "notes": []})
+                report[epoch][str(wid)]["status"] = "malformed_envelope"
+                report[epoch][str(wid)]["notes"].append("missing message or signature in payload")
                 continue
 
             try:
                 worker_pub = cfg.WORKER_KEY_PATHS[int(wid)]
             except Exception:
                 print(f"Coordinator: no public key for worker {wid}", flush=True)
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "no_pubkey", "notes": []})
+                report[epoch][str(wid)]["status"] = "no_pubkey"
+                report[epoch][str(wid)]["notes"].append("no public key configured for worker")
                 continue
 
             # Verify envelope signature and nonce freshness using the established session nonce
             session_nonce = session_keys.get(str(wid))
             if not session_nonce:
                 print(f"Coordinator: no session for worker {wid}; ignoring result", flush=True)
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "no_session", "notes": []})
+                report[epoch][str(wid)]["status"] = "no_session"
+                report[epoch][str(wid)]["notes"].append("no session nonce for worker")
                 continue
 
             if not verify_envelope(payload_env, session_nonce, worker_pub):
                 print(f"Coordinator: envelope verification failed for worker {wid}; ignoring", flush=True)
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "invalid_signature", "notes": []})
+                report[epoch][str(wid)]["status"] = "invalid_signature"
+                report[epoch][str(wid)]["notes"].append("envelope signature verification failed or signed by wrong key")
                 continue
 
             # Extract worker payload (remove nonce)
@@ -257,6 +290,9 @@ def train(cfg: CoordinatorConfig):
             received_hashes = worker_payload.get("hashes") or {}
             if expected is None:
                 print(f"Coordinator: no expected hashes recorded for worker {wid}; ignoring result", flush=True)
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "no_expected_hashes", "notes": []})
+                report[epoch][str(wid)]["status"] = "no_expected_hashes"
+                report[epoch][str(wid)]["notes"].append("no expected hashes stored for this worker/task")
                 continue
 
             mismatch = False
@@ -266,6 +302,13 @@ def train(cfg: CoordinatorConfig):
                     mismatch = True
             if mismatch:
                 print(f"Coordinator: ignoring result from worker {wid} due to hash mismatch", flush=True)
+                # record mismatch details
+                report.setdefault(epoch, {}).setdefault(str(wid), {"status": "hash_mismatch", "notes": []})
+                report[epoch][str(wid)]["status"] = "hash_mismatch"
+                # record which keys mismatched and values
+                for k, v in expected.items():
+                    if received_hashes.get(k) != v:
+                        report[epoch][str(wid)]["notes"].append(f"{k}: expected {v}, got {received_hashes.get(k)}")
                 continue
 
             # Hashes verified OK — log a concise confirmation and accept result
@@ -275,7 +318,9 @@ def train(cfg: CoordinatorConfig):
                 flush=True,
             )
 
-            # Accept result
+            # record success and accept result
+            report.setdefault(epoch, {}).setdefault(str(wid), {"status": "ok", "notes": []})
+            report[epoch][str(wid)]["status"] = "ok"
             grads_accum.append(worker_payload["grads"])  # dict[name -> list]
             losses.append(worker_payload["loss"])
             counts.append(worker_payload["n"])
@@ -312,6 +357,50 @@ def train(cfg: CoordinatorConfig):
         y_pred = torch.argmax(logits, dim=1).cpu().numpy()
     acc = float(np.mean(y_pred == y_test))
     print(f"Final test Accuracy: {acc:.4f}", flush=True)
+
+    training_end = time.time()
+    total_training_time = training_end - training_start
+    avg_epoch = total_training_time / max(1, cfg.EPOCHS)
+    print(
+        f"\nTiming summary: handshake={handshake_time:.3f}s | preprocess={preprocess_time:.3f}s | total_training={total_training_time:.3f}s | avg_epoch={avg_epoch:.3f}s",
+        flush=True,
+    )
+
+    # Write out a human-readable report of per-epoch per-worker verification results
+    try:
+        # Prefer writing to the mounted ./data directory so the host can
+        # inspect the report when running in Docker. Create the dir if
+        # it doesn't exist.
+        report_dir = os.path.join(os.getcwd(), "data")
+        os.makedirs(report_dir, exist_ok=True)
+        report_path = os.path.join(report_dir, "hash_report.txt")
+        with open(report_path, "w") as rf:
+            rf.write(f"Coordinator verification report\n")
+            rf.write(f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            for e in sorted(report.keys()):
+                rf.write(f"Epoch {e}:\n")
+                for wid in sorted(report[e].keys(), key=lambda x: int(x)):
+                    entry = report[e][wid]
+                    status = entry.get("status", "unknown")
+                    notes = entry.get("notes", [])
+                    rf.write(f"  Worker {wid}: {status}")
+                    if notes:
+                        rf.write(" -- ")
+                        rf.write("; ".join(notes))
+                    rf.write("\n")
+                rf.write("\n")
+        print(f"Coordinator: wrote verification report to {report_path}", flush=True)
+
+        # Also print the report contents to stdout so it's visible in logs
+        try:
+            with open(report_path, "r") as rf2:
+                print("\n----- Verification report -----", flush=True)
+                print(rf2.read(), flush=True)
+                print("----- End of report -----\n", flush=True)
+        except Exception as e:
+            print(f"Coordinator: failed to print verification report: {e}", flush=True)
+    except Exception as e:
+        print(f"Coordinator: failed to write verification report: {e}", flush=True)
 
 
     # Send SHUTDOWN control message to all workers so they can exit cleanly.

@@ -1,0 +1,43 @@
+Coordinator verification report
+Generated: 2025-11-15 00:36:08
+
+Epoch 0:
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 0000000000000000000000000000000000000000000000000000000000000000
+  Worker 1: ok
+
+Epoch 1:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 2:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 3:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 4:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 5:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 6:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 7:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 8:
+  Worker 0: ok
+  Worker 1: ok
+
+Epoch 9:
+  Worker 0: ok
+  Worker 1: ok
+
