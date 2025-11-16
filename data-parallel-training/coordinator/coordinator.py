@@ -151,8 +151,8 @@ def train(cfg: CoordinatorConfig):
     print(f"Coordinator: data preprocessing completed in {preprocess_time:.3f}s", flush=True)
     rng = np.random.default_rng(cfg.SEED)
 
-    # Initialize model (JSON)
-    model_string = '''
+    # Initialize model (JSON). Allow overriding via cfg.MODEL_JSON file path.
+    default_model_string = '''
     {
         "model_type": "CustomizableLinearNet",
         "params": {
@@ -164,6 +164,18 @@ def train(cfg: CoordinatorConfig):
         }
     }
     '''
+
+    # If a model JSON file path was provided, load it; otherwise use default
+    if getattr(cfg, "MODEL_JSON", None):
+        try:
+            with open(cfg.MODEL_JSON, "r") as mf:
+                model_string = mf.read()
+        except Exception as e:
+            print(f"Coordinator: failed to read model JSON {cfg.MODEL_JSON}: {e}; falling back to default", flush=True)
+            model_string = default_model_string
+    else:
+        model_string = default_model_string
+
     model = ModelHandler.parse_model_string(model_string)  # ensure same as workers
     assert model != -1
 
@@ -172,6 +184,40 @@ def train(cfg: CoordinatorConfig):
         f"Data: X={X_train.shape}, y={y_train.shape}",
         flush=True
     )
+
+    # Compute and record global hashes: dataset, architecture, initial weights, training config
+    def _stable_json_hash(obj):
+        try:
+            j = json.dumps(obj, sort_keys=True, separators=(",",":"), default=lambda o: o.tolist() if hasattr(o, "tolist") else str(o))
+        except Exception:
+            j = json.dumps(str(obj), sort_keys=True, separators=(",",":"))
+        return hashlib.sha256(j.encode()).hexdigest()
+
+    # Hash the full training dataset (may be large) — this is requested.
+    H_dataset = _stable_json_hash({"X_train": X_train.tolist(), "y_train": y_train.tolist()})
+
+    # Hash architecture
+    H_arch = _stable_json_hash(model_string)
+
+    # If initial weights file provided, load and use; otherwise use model.state_dict()
+    initial_weights_payload = None
+    if getattr(cfg, "INITIAL_WEIGHTS", None):
+        try:
+            with open(cfg.INITIAL_WEIGHTS, "r") as wf:
+                initial_weights_payload = json.load(wf)
+            # load into model to ensure consistency
+            coerced = {k: torch.as_tensor(v) for k, v in initial_weights_payload.items()}
+            model.load_state_dict(coerced)
+        except Exception as e:
+            print(f"Coordinator: failed to load initial weights from {cfg.INITIAL_WEIGHTS}: {e}; using model defaults", flush=True)
+            initial_weights_payload = {k: v.cpu().numpy().tolist() for k, v in model.state_dict().items()}
+    else:
+        initial_weights_payload = {k: v.cpu().numpy().tolist() for k, v in model.state_dict().items()}
+
+    H_weights_init = _stable_json_hash(initial_weights_payload)
+
+    # Hash training configuration (lr, epochs, seed, num_workers)
+    H_config = _stable_json_hash({"lr": float(cfg.LR), "epochs": int(cfg.EPOCHS), "seed": int(cfg.SEED), "num_workers": int(cfg.NUM_WORKERS)})
 
     # Report structure: report[epoch][wid] = {"status": <str>, "notes": [<str>, ...]}
     report = {}
@@ -214,8 +260,8 @@ def train(cfg: CoordinatorConfig):
             # Compute and store stable hashes for this task so we can verify
             # worker responses later.
             H_DTr = _stable_json_hash({"X": payload["X"], "y": payload["y"]})
-            H_MAr = _stable_json_hash(payload["architecture"])
-            H_Me_init = _stable_json_hash(payload["weights"])
+            H_MAr = H_arch  # architecture hash is global
+            H_Me_init = H_weights_init  # initial weights hash is global
             H_T = _stable_json_hash({"lr": payload["lr"], "epoch": payload["epoch"]})
             expected_hashes[wid_str] = {
                 "H_DTr": H_DTr,
@@ -366,7 +412,7 @@ def train(cfg: CoordinatorConfig):
         flush=True,
     )
 
-    # Write out a human-readable report of per-epoch per-worker verification results
+        # Write out a human-readable report of per-epoch per-worker verification results
     try:
         # Prefer writing to the mounted ./data directory so the host can
         # inspect the report when running in Docker. Create the dir if
@@ -377,6 +423,11 @@ def train(cfg: CoordinatorConfig):
         with open(report_path, "w") as rf:
             rf.write(f"Coordinator verification report\n")
             rf.write(f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            rf.write("Global hashes:\n")
+            rf.write(f"  H_dataset: {H_dataset}\n")
+            rf.write(f"  H_arch: {H_arch}\n")
+            rf.write(f"  H_weights_init: {H_weights_init}\n")
+            rf.write(f"  H_config: {H_config}\n\n")
             for e in sorted(report.keys()):
                 rf.write(f"Epoch {e}:\n")
                 for wid in sorted(report[e].keys(), key=lambda x: int(x)):
@@ -395,7 +446,16 @@ def train(cfg: CoordinatorConfig):
         try:
             with open(report_path, "r") as rf2:
                 print("\n----- Verification report -----", flush=True)
-                print(rf2.read(), flush=True)
+                contents = rf2.read()
+                print(contents, flush=True)
+                # Also print concise global hashes line for quick visibility
+                try:
+                    print(
+                        f"Global hashes summary: H_dataset={H_dataset}, H_arch={H_arch}, H_weights_init={H_weights_init}, H_config={H_config}",
+                        flush=True,
+                    )
+                except Exception:
+                    pass
                 print("----- End of report -----\n", flush=True)
         except Exception as e:
             print(f"Coordinator: failed to print verification report: {e}", flush=True)
@@ -427,6 +487,8 @@ def main():
     p.add_argument("--epochs", type=int, default=15)
     p.add_argument("--lr", type=float, default=0.01)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--model-json", type=str, default=None, help="Optional path to a model JSON file describing architecture")
+    p.add_argument("--initial-weights", type=str, default=None, help="Optional path to a JSON file with initial weights {param_name: nested lists}")
     args = p.parse_args()
 
     seed = args.seed
@@ -447,6 +509,9 @@ def main():
     cfg.EPOCHS = args.epochs
     cfg.LR = args.lr
     cfg.SEED = seed
+    # attach optional inputs to cfg so train() can use them
+    cfg.MODEL_JSON = args.model_json
+    cfg.INITIAL_WEIGHTS = args.initial_weights
     train(cfg)
 
 
