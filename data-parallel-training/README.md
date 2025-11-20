@@ -47,8 +47,46 @@ Running locally (without Docker)
 python3 generate-keys.py
 ```
 
+Change model & worker count
+---------------------------
 
-Where outputs and reports go
+- Change the model used by the demo:
+
+    Edit the `model_string` (or the model definition) in `coordinator/coordinator.py` to switch architectures or modify the example model. After changing the model code you can run the coordinator locally or rebuild the Docker image and restart the compose stack.
+
+- Increase the number of workers (Docker):
+
+    Add additional worker service entries in `docker-compose.yaml` and make sure the coordinator's `--num-workers` argument matches the total number of worker services. Example (adds a second worker):
+
+    ```yaml
+    worker2:
+        build: .
+        container_name: data-parallel-worker2
+        command: python ./worker/worker.py
+        environment:
+            WORKER_ID: "1"
+        networks:
+            - training-net
+        depends_on:
+            - coordinator
+    ```
+
+    Then update the coordinator service args (or run the coordinator locally) so it knows how many workers to expect:
+
+    ```yaml
+    coordinator:
+        build: .
+        container_name: data-parallel-coordinator
+        command: >
+            python ./coordinator/coordinator.py
+            --num-workers 2
+            --epochs 10
+            --lr 0.1
+    ```
+Notes
+- Make sure `--num-workers` equals the number of worker services you defined in `docker-compose.yaml`.
+- Instead of editing `docker-compose.yaml` directly
+
 
 Verification / hashing behavior
 ------------------------------
@@ -100,7 +138,7 @@ Notes and next steps
 - The current hashing and signature checks are demonstration-grade; in a
     production system you would also harden replay protection, nonce
     management, and key rotation.
-
+- Use SGX instead of assuming. 
 
 
 
