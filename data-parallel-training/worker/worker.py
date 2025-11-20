@@ -15,8 +15,6 @@ import hashlib
 #sleep
 import time
 
-time.sleep(2)
-
 
 def main():
     ctx = zmq.Context.instance()
@@ -67,7 +65,6 @@ def main():
 
     # Step 5: Continue normal operation
     seen_nonces_tasks = set()
-    time.sleep(1)
 
     # misbehavior counter (one-shot test). This copies the configured
     # number of misbehaviors into a local counter we decrement on use.

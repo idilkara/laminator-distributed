@@ -1,5 +1,5 @@
 Coordinator verification report
-Generated: 2025-11-16 00:34:06
+Generated: 2025-11-20 19:26:39
 
 Global hashes:
   H_dataset: 4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285
@@ -8,42 +8,42 @@ Global hashes:
   H_config: cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
 
 Epoch 0:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 0000000000000000000000000000000000000000000000000000000000000000
+  Worker 0: ok
   Worker 1: ok
 
 Epoch 1:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 2:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 3:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 4:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 5:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 6:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 7:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 8:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
 Epoch 9:
-  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
-  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got a7fb43e4179d1e1657ab73f3db5c9935224b819f8a654b899d09131a506e9d29
+  Worker 0: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
+  Worker 1: hash_mismatch -- H_Me_init: expected 323e30c8d97b65bd9c8a80c127050e20ba3b77438eccf7c860175bc8ce214376, got 1d5d49ae0bd277bea63c8394f834152fa494a9a1c82c78f1ea648fe51b71d92a
 
