@@ -25,7 +25,6 @@ services:
     command: python ./worker/worker.py
     environment:
       WORKER_ID: "0"
-      WORKER_MISBEHAVE: "1"
     networks:
       - training-net
     depends_on:

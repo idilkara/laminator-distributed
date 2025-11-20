@@ -1,12 +1,138 @@
-Commands to run the docker containers:
+Data-parallel training demo (coordinator + workers)
+=================================================
 
-    docker compose up --build
+This folder contains a small, self-contained demo of a coordinator + worker
+system that performs data-parallel training. The coordinator sends signed
+training tasks (model architecture, initial weights, batch data, config)
+to workers over ZMQ. Workers compute gradients (and a one-step local update)
+and return signed, hashed results. The coordinator verifies signatures and
+hashes, aggregates gradients, updates the global model, and records a
+verification report.
 
-Set the parameters of training in the docker-compose.py file, 
+Quick start (Docker)
+--------------------
 
-    --num-workers 4
-    --epochs 25
-    --lr 0.01
-    --l2 0.0
+1. Build and run the coordinator+workers with docker-compose (from this
+     directory):
+
+```bash
+docker compose up --build
+```
+
+2. Compose sets default runtime arguments for the coordinator. To change
+     training parameters edit `docker-compose.yaml` or run the coordinator
+     locally (see below).
+
+Important files
+---------------
+
+- `coordinator/` — coordinator process. Main file: `coordinator.py`.
+- `worker/` — worker process. Main file: `worker.py`.
+- `auth.py` — signing/verification helpers used by both coordinator and
+    worker (in the service directories).
+- `generate-keys.py` — helper to create RSA keypairs used by the demo.
+- `data/` — small dataset used by the demo (mounted into the coordinator
+    container).
+- `keys/` — generated keys (coordinator and workers). Not checked into
+    git by default.
+- `docker-compose.yaml` — starts one coordinator and two workers by
+    default (see `services:` entries).
+
+Running locally (without Docker)
+-------------------------------
+
+1. Create keys (one-time):
+
+```bash
+python3 generate-keys.py
+```
+
+2. Start the coordinator manually (example):
+
+```bash
+python3 coordinator/coordinator.py --num-workers 2 --epochs 10 --lr 0.1
+```
+
+3. In separate terminals, start each worker (set WORKER_ID accordingly):
+
+```bash
+export WORKER_ID=0
+python3 worker/worker.py
+
+export WORKER_ID=1
+python3 worker/worker.py
+```
+
+Command-line options
+--------------------
+
+- `coordinator.py` accepts the usual CLI args: `--num-workers`, `--epochs`,
+    `--lr`, `--seed`.
+- New (optional) flags: `--model-json` (path to a JSON file describing the
+    model architecture) and `--initial-weights` (path to a JSON file with a
+    serialized initial state_dict). If provided the coordinator will use
+    these inputs and include stable hashes of them in the verification report.
+
+Where outputs and reports go
+---------------------------
+
+- The coordinator writes a verification report to `./data/hash_report.txt`.
+    When running with docker-compose `./data` is mounted from the host so the
+    file is visible on the host after the run.
+- The coordinator also prints a timing summary and the report contents to
+    stdout at the end of training.
+
+Verification / hashing behavior
+------------------------------
+
+- The coordinator computes stable SHA-256 hashes for:
+    - the entire training dataset (H_dataset),
+    - the model architecture JSON (H_arch),
+    - the initial weights (H_weights_init), and
+    - the training config (H_config).
+- These global hashes are included at the top of `hash_report.txt`.
+- For each per-worker task the coordinator computes per-task hashes as
+    well (including a per-batch H_DTr). Workers compute the same hashes when
+    generating results; the coordinator verifies both signatures and hashes
+    and records mismatches in the report.
+
+Testing failure modes (misbehaving workers)
+------------------------------------------
+
+For testing, workers support an opt-in misbehavior mode controlled by the
+env var `WORKER_MISBEHAVE` (integer). Example in `docker-compose.yaml`:
+
+```yaml
+    worker1:
+        environment:
+            WORKER_ID: "0"
+            WORKER_MISBEHAVE: "1"  # worker will corrupt first task's hash
+        
+```
+
+When enabled the worker will intentionally corrupt one of the reported
+hashes for the configured number of tasks. The coordinator will detect the
+hash mismatch, ignore the result, and log the incident in the verification
+report.
+
+Where to look for logs and report
+--------------------------------
+
+- Coordinator stdout (or `docker logs coordinator`) shows:
+    - handshake time, preprocessing time, per-epoch stats, and a timing summary.
+    - the verification report contents (printed at the end)
+- The report file appears at `data/hash_report.txt` on the host when using
+    docker-compose.
+
+Notes and next steps
+--------------------
+
+- This demo uses JSON serialization for portability. For large models or
+    production workloads you would prefer binary formats and streaming.
+- The current hashing and signature checks are demonstration-grade; in a
+    production system you would also harden replay protection, nonce
+    management, and key rotation.
+
+
 
 
