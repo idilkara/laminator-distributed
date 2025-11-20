@@ -47,40 +47,8 @@ Running locally (without Docker)
 python3 generate-keys.py
 ```
 
-2. Start the coordinator manually (example):
-
-```bash
-python3 coordinator/coordinator.py --num-workers 2 --epochs 10 --lr 0.1
-```
-
-3. In separate terminals, start each worker (set WORKER_ID accordingly):
-
-```bash
-export WORKER_ID=0
-python3 worker/worker.py
-
-export WORKER_ID=1
-python3 worker/worker.py
-```
-
-Command-line options
---------------------
-
-- `coordinator.py` accepts the usual CLI args: `--num-workers`, `--epochs`,
-    `--lr`, `--seed`.
-- New (optional) flags: `--model-json` (path to a JSON file describing the
-    model architecture) and `--initial-weights` (path to a JSON file with a
-    serialized initial state_dict). If provided the coordinator will use
-    these inputs and include stable hashes of them in the verification report.
 
 Where outputs and reports go
----------------------------
-
-- The coordinator writes a verification report to `./data/hash_report.txt`.
-    When running with docker-compose `./data` is mounted from the host so the
-    file is visible on the host after the run.
-- The coordinator also prints a timing summary and the report contents to
-    stdout at the end of training.
 
 Verification / hashing behavior
 ------------------------------
