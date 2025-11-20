@@ -20,20 +20,6 @@ from auth import sign_message, verify_signature, create_handshake_offer, verify_
 from config import CoordinatorConfig
 
 
-#verify if attestation from worker matches expected attestation
-def verfiy_attestation(attestation:dict, expected_attestation:dict) -> bool:
-    # Implement attestation verification logic here
-    # For example, compare expected values with received attestation
-    for key, expected_value in expected_attestation.items():
-        received_value = attestation.get(key)
-        if received_value != expected_value:
-            print(f"Attestation mismatch for {key}: expected {expected_value}, got {received_value}", flush=True)
-            return False
-    print("Attestation verified successfully.", flush=True)
-    return True
-
-
-
 
 # ---------- Training Loop ----------
 def train(cfg: CoordinatorConfig):
@@ -193,7 +179,7 @@ def train(cfg: CoordinatorConfig):
             j = json.dumps(str(obj), sort_keys=True, separators=(",",":"))
         return hashlib.sha256(j.encode()).hexdigest()
 
-    # Hash the full training dataset (may be large) — this is requested.
+    # Hash the full training dataset (may be large)
     H_dataset = _stable_json_hash({"X_train": X_train.tolist(), "y_train": y_train.tolist()})
 
     # Hash architecture
@@ -261,12 +247,12 @@ def train(cfg: CoordinatorConfig):
             # worker responses later.
             H_DTr = _stable_json_hash({"X": payload["X"], "y": payload["y"]})
             H_MAr = H_arch  # architecture hash is global
-            H_Me_init = H_weights_init  # initial weights hash is global
+            H_Me_init = _stable_json_hash(payload["weights"])
             H_T = _stable_json_hash({"lr": payload["lr"], "epoch": payload["epoch"]})
             expected_hashes[wid_str] = {
                 "H_DTr": H_DTr,
                 "H_MAr": H_MAr,
-                "H_Me_init": H_Me_init,
+                "H_Me_init": H_Me_init, # weigths sent in task 
                 "H_T": H_T,
             }
 
