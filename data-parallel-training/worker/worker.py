@@ -131,7 +131,7 @@ def main():
         # Compute gradients, loss and obtain updated (trained) weights
         # compute_grad_and_loss now returns (grads, loss, n, updated_state_dict)
         grads, loss, n, updated_state = compute_grad_and_loss(task)
-        time.sleep(random.uniform(0.05, 0.2))  # simulate variable workload
+        
 
         # Convert gradients to JSON-serializable format. `grads` may contain
         # torch tensors or numpy arrays depending on where they were created;

@@ -8,8 +8,6 @@ from training import compute_grad_and_loss
 from config import WorkerConfig
 import sys
 
-# small startup delay (optional)
-time.sleep(2)
 
 
 def main():
