@@ -393,12 +393,18 @@ def train(cfg: CoordinatorConfig):
     training_end = time.time()
     total_training_time = training_end - training_start
     avg_epoch = total_training_time / max(1, cfg.EPOCHS)
-    print(
-        f"\nTiming summary: handshake={handshake_time:.3f}s | preprocess={preprocess_time:.3f}s | total_training={total_training_time:.3f}s | avg_epoch={avg_epoch:.3f}s",
-        flush=True,
-    )
 
-        # Write out a human-readable report of per-epoch per-worker verification results
+    # Prepare final weights payload and hash so we can include it in the report
+    try:
+        final_weights_payload = {k: v.cpu().numpy().tolist() for k, v in model.state_dict().items()}
+        H_weights_final = _stable_json_hash(final_weights_payload)
+    except Exception:
+        final_weights_payload = None
+        H_weights_final = None
+
+    # Write out a human-readable report of per-epoch per-worker verification results
+    # Measure report generation time (includes writing the report file, final_weights.json and signing)
+    report_gen_start = time.time()
     try:
         # Prefer writing to the mounted ./data directory so the host can
         # inspect the report when running in Docker. Create the dir if
@@ -413,6 +419,27 @@ def train(cfg: CoordinatorConfig):
             rf.write(f"  H_dataset: {H_dataset}\n")
             rf.write(f"  H_arch: {H_arch}\n")
             rf.write(f"  H_weights_init: {H_weights_init}\n")
+            # include final weights hash/path if available
+            if H_weights_final is not None:
+                rf.write(f"  H_weights_final: {H_weights_final}\n")
+                rf.write(f"  weights_final: {final_weights_payload}\n")
+            else:
+                rf.write(f"  H_weights_final: <unavailable>\n")
+            # write final accuracy and final loss (if available)
+            try:
+                rf.write(f"  final_accuracy: {acc:.6f}\n")
+            except Exception:
+                rf.write(f"  final_accuracy: <unavailable>\n")
+            try:
+                rf.write(f"  final_loss: {avg_loss:.6f}\n")
+            except Exception:
+                rf.write(f"  final_loss: <unavailable>\n")
+            # write path for final weights file
+            final_weights_path = os.path.join(report_dir, "final_weights.json")
+            if final_weights_payload is not None:
+                rf.write(f"  final_weights_path: {final_weights_path}\n\n")
+            else:
+                rf.write(f"  final_weights_path: <unavailable>\n\n")
             rf.write(f"  H_config: {H_config}\n\n")
             for e in sorted(report.keys()):
                 rf.write(f"Epoch {e}:\n")
@@ -433,7 +460,7 @@ def train(cfg: CoordinatorConfig):
             with open(report_path, "r") as rf2:
                 print("\n----- Verification report -----", flush=True)
                 contents = rf2.read()
-                print(contents, flush=True)
+                # print(contents, flush=True)
                 # Also print concise global hashes line for quick visibility
                 try:
                     print(
@@ -442,9 +469,41 @@ def train(cfg: CoordinatorConfig):
                     )
                 except Exception:
                     pass
-                print("----- End of report -----\n", flush=True)
+                # print("----- End of report -----\n", flush=True)
         except Exception as e:
             print(f"Coordinator: failed to print verification report: {e}", flush=True)
+
+        # Sign the report contents and write signature to a separate file
+        try:
+            # Before signing the report, also write the final weights JSON (if available)
+            if final_weights_payload is not None:
+                try:
+                    with open(final_weights_path, "w") as fwf:
+                        json.dump(final_weights_payload, fwf, separators=(",", ":"), sort_keys=True)
+                    print(f"Coordinator: wrote final weights to {final_weights_path}", flush=True)
+                except Exception as e:
+                    print(f"Coordinator: failed to write final weights file: {e}", flush=True)
+
+            # Use the coordinator private key to sign the human-readable
+            # report. The sign_message() function returns raw signature bytes.
+            sig_bytes = sign_message(contents.encode(), cfg.PRIVATE_KEY_PATH)
+            sig_hex = sig_bytes.hex()
+            sig_path = os.path.join(report_dir, "hash_report.txt.sig")
+            with open(sig_path, "w") as sf:
+                # Write signature as hex along with generation timestamp for convenience
+                sf.write(f"signature_hex: {sig_hex}\n")
+                sf.write(f"generated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+                sf.write(f"signed_by_private_key: {os.path.basename(cfg.PRIVATE_KEY_PATH)}\n")
+            print(f"Coordinator: wrote report signature to {sig_path}", flush=True)
+            # Report generation finished (includes final weights write + signature)
+            report_gen_end = time.time()
+            report_gen_time = report_gen_end - report_gen_start
+
+            print(f"\nTiming summary: handshake={handshake_time:.3f}s | preprocess={preprocess_time:.3f}s | total_training={total_training_time:.3f}s | avg_epoch={avg_epoch:.3f}s | report_generation={report_gen_time:.3f}s",flush=True)
+     
+            print(f"Coordinator: report generation time: {report_gen_time:.3f}s", flush=True)
+        except Exception as e:
+            print(f"Coordinator: failed to sign/write report signature: {e}", flush=True)
     except Exception as e:
         print(f"Coordinator: failed to write verification report: {e}", flush=True)
 

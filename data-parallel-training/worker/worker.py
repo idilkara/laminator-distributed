@@ -208,7 +208,7 @@ def main():
                 "H_Me_init": H_Me_init,
                 "H_T": H_T,
             },
-            "epoch": int(task.get("epoch", -1)),
+            "epoch": int(task.get("epoch", -1)), 
             "worker_index": WorkerConfig.WORKER_ID,
             "trained_weights": trained_weights_json,
         }
