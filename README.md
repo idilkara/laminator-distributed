@@ -4,21 +4,23 @@ This repository contains small demos of a distributed training coordinator + wor
 
 There are two example stacks in this repo:
 
-- `baseline/` — Docker Compose builds and runs one coordinator and one (or more) worker containers for data-parallel-training but without any attestation or assumptions. See `baseline/README.md`.
-- `data-parallel-training/` — A coordinator and one (or more) worker containers performing data-parallel training with signed, hashed tasks and results, assuming it was run inside TEEs. See `data-parallel-training/README.md`.
+- `baseline/` — one coordinator and one (or more) worker containers for data-parallel-training but without any attestation or assumptions. See `baseline/README.md`.
+- `data-parallel-training/` — oone coordinator and one (or more) worker containers performing data-parallel training with signed, hashed tasks and results, assuming it was run inside TEEs. See `data-parallel-training/README.md`.
 
 High-level flow
 
 - The coordinator prepares training tasks that include the model architecture, initial weights, a batch of data, and training configuration.
 - Tasks are dispatched to workers; workers perform local computation (compute gradients and a one-step local update across the configured number of epochs or steps) and return results to the coordinator.
 - (for the second setup) Results are signed and hashed by workers; the coordinator verifies signatures and hashes, aggregates gradients, updates the global model, and records a verification report with the overall hashes that were input to the coordinator(`data/hash_report.txt`).
+- Verifier can verify using the verify.py script in `data/verifier.py`. (also see the `data/README.md`) 
+
 
 Using Docker
 
 From the respective folder run:
 
 ```zsh
-docker compose up -d --build
+docker compose up --build
 ```
 
 Stop and remove the stack with:
@@ -35,11 +37,9 @@ Quick edits
 
 Security & notes
 
-- The demos include example keys under `keys/` for convenience. Do not use those keys in production — generate and manage keys externally.
-- The signing and hashing logic is demo-grade and intended to illustrate concepts. A production system requires hardened replay protection, nonce management, key rotation, and binary-efficient serialization for large models.
-
-Where to look next
+- This repository include pre-generated public and secret keys under `keys/` for convenience. 
 
 - `baseline/README.md` - try the data-parallel training. 
+
 - `data-parallel-training/README.md` — generate-keys helper, testing failure modes, and verification report behavior.
 

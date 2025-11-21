@@ -64,3 +64,16 @@ Given:
      H_weights_init: <hex>
      ...
      H_config: <hex>
+
+    Epoch 0:
+        Worker 0: ok OR not ok
+        Worker 1: ok OR not ok
+
+        ...
+
+    Epoch N:
+        Worker 0: ok OR not ok
+        Worker 1: ok OR not ok
+
+-  If any result for worker, for epoch value is not ok, it detects it and outputs. 
+

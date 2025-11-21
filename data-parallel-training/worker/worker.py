@@ -1,19 +1,13 @@
 # worker.py
-import os
-import time
 import random
 import json
-import torch
 import zmq
 import numpy as np
 from training import compute_grad_and_loss
-from auth import sign_message, verify_signature, verify_handshake_offer, create_handshake_response, sign_envelope, verify_envelope
+from auth import verify_handshake_offer, create_handshake_response, sign_envelope, verify_envelope
 from config import WorkerConfig
 import sys
 import hashlib
-
-#sleep
-import time
 
 
 def main():
@@ -89,6 +83,8 @@ def main():
         # Extract task payload and remove nonce
         task = dict(payload_env["message"]) if isinstance(payload_env["message"], dict) else {}
         task.pop("nonce", None)
+
+
         # Handle control/shutdown messages from coordinator.
         # Accept several common forms so coordinator can send a simple
         # control envelope like {"control": "SHUTDOWN"} or a bare
@@ -97,15 +93,12 @@ def main():
         try:
             if isinstance(task, dict):
                 # common keys that might indicate shutdown
-                if task.get("control") == "SHUTDOWN" or task.get("command") == "SHUTDOWN" or task.get("type") == "SHUTDOWN":
+                if task.get("control") == "SHUTDOWN" :
                     is_shutdown = True
                 # also allow explicit boolean flag
                 if task.get("shutdown") is True:
                     is_shutdown = True
-            else:
-                # message could be a plain string
-                if isinstance(task, str) and task.upper() == "SHUTDOWN":
-                    is_shutdown = True
+
         except Exception:
             is_shutdown = False
 
@@ -119,6 +112,8 @@ def main():
             except Exception:
                 pass
             sys.exit(0)
+
+        # RECEIVED A TRAINING TASK:
         print(f"Worker {WorkerConfig.WORKER_ID}: received task for epoch {task['epoch']}", flush=True)
         print(len(task['X']), "samples")
         # Compute gradients, loss and obtain updated (trained) weights

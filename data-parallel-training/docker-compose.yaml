@@ -41,6 +41,73 @@ services:
     depends_on:
       - coordinator
 
+  # worker3:
+  #   build: .
+  #   container_name: worker3
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "2"
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator
+
+  # worker4:
+  #   build: .
+  #   container_name: worker4
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "3"  
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator
+
+  # worker5:
+  #   build: .
+  #   container_name: worker5
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "4"  
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator
+
+  # worker6:
+  #   build: .
+  #   container_name: worker6
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "5"  
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator
+    
+  # worker7:
+  #   build: .  
+  #   container_name: worker7
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "6"  
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator
+
+  # worker8:
+  #   build: .  
+  #   container_name: worker8
+  #   command: python ./worker/worker.py
+  #   environment:
+  #     WORKER_ID: "7"  
+  #   networks:
+  #     - training-net
+  #   depends_on:
+  #     - coordinator 
+    
+  
 
 networks:
   training-net:

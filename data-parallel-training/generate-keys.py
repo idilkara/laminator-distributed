@@ -13,7 +13,8 @@ def generate_keys(name: str):
     print(f"Generated keys for {name}")
 
 def main():
-    participants = ["worker0", "worker1", "coordinator"]
+    participants = ["worker0", "worker1", "worker2","worker3","worker4","worker5", "worker6","worker7", "coordinator"]
+    
     for name in participants:
         generate_keys(name)
 

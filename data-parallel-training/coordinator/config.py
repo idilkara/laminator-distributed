@@ -14,9 +14,10 @@ class CoordinatorConfig:
 
     PRIVATE_KEY_PATH = os.path.join("keys", "coordinator_private.pem")
 
-    NUM_WORKERS = int(os.environ.get("NUM_WORKERS", 4))
+    NUM_WORKERS = int(os.environ.get("NUM_WORKERS", 8)) # total number of expected workers at most 
 
     WORKER_KEY_PATHS = {}
     for wid in range(NUM_WORKERS):
         WORKER_KEY_PATHS[wid] = os.path.join("keys", f"worker{wid}_public.pem")
+    print("Coordinator will use worker public keys:", WORKER_KEY_PATHS)
 

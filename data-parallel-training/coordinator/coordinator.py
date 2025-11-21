@@ -91,6 +91,7 @@ def train(cfg: CoordinatorConfig):
                 continue
 
             try:
+                print(cfg.WORKER_KEY_PATHS)
                 worker_pub = cfg.WORKER_KEY_PATHS[int(wid)]
             except Exception:
                 print(f"Coordinator: no public key for worker {wid}", flush=True)
@@ -127,9 +128,9 @@ def train(cfg: CoordinatorConfig):
     handshake_time = handshake_end - handshake_start
     print(f"Coordinator: handshake phase completed in {handshake_time:.3f}s", flush=True)
 
+########### HANDSHAKE ESTABLISHED — PROCEED TO TRAINING ###########
 
-
-    # Data preparation (measure time)
+    # Data preparation
     preprocess_start = time.time()
     X_train, y_train, X_test, y_test = process_census()
     preprocess_end = time.time()
@@ -179,10 +180,8 @@ def train(cfg: CoordinatorConfig):
             j = json.dumps(str(obj), sort_keys=True, separators=(",",":"))
         return hashlib.sha256(j.encode()).hexdigest()
 
-    # Hash the full training dataset (may be large)
+    # Hash the full training dataset (may be large) AND architecture
     H_dataset = _stable_json_hash({"X_train": X_train.tolist(), "y_train": y_train.tolist()})
-
-    # Hash architecture
     H_arch = _stable_json_hash(model_string)
 
     # If initial weights file provided, load and use; otherwise use model.state_dict()
@@ -208,8 +207,7 @@ def train(cfg: CoordinatorConfig):
     # Report structure: report[epoch][wid] = {"status": <str>, "notes": [<str>, ...]}
     report = {}
 
-    
-    # ---------- Training epochs ----------
+    ########### TRAINING EPOCHS ###########
     training_start = time.time()
     for epoch in range(cfg.EPOCHS):
         t0 = time.time()
@@ -341,7 +339,7 @@ def train(cfg: CoordinatorConfig):
             if worker_epoch != epoch:
                 print(f"Coordinator: epoch mismatch from worker {wid}: expected {epoch}, got {worker_epoch}", flush=True)
                 mismatch = True
-                
+
             if mismatch:
                 print(f"Coordinator: ignoring result from worker {wid} due to hash mismatch", flush=True)
                 # record mismatch details
