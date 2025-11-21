@@ -256,6 +256,7 @@ def train(cfg: CoordinatorConfig):
                 "H_T": H_T,
             }
 
+
             # initialize per-worker report entry for this epoch
             report[epoch].setdefault(wid_str, {"status": "pending", "notes": []})
 
@@ -332,6 +333,15 @@ def train(cfg: CoordinatorConfig):
                 if received_hashes.get(k) != v:
                     print(f"Coordinator: hash mismatch from worker {wid} for {k}: expected {v}, got {received_hashes.get(k)}", flush=True)
                     mismatch = True
+
+            
+            # verify that worker epoch matches the current epoch
+
+            worker_epoch = worker_payload.get("epoch")
+            if worker_epoch != epoch:
+                print(f"Coordinator: epoch mismatch from worker {wid}: expected {epoch}, got {worker_epoch}", flush=True)
+                mismatch = True
+                
             if mismatch:
                 print(f"Coordinator: ignoring result from worker {wid} due to hash mismatch", flush=True)
                 # record mismatch details

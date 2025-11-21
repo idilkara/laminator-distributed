@@ -66,13 +66,6 @@ def main():
     # Step 5: Continue normal operation
     seen_nonces_tasks = set()
 
-    # misbehavior counter (one-shot test). This copies the configured
-    # number of misbehaviors into a local counter we decrement on use.
-    misbehave_left = int(getattr(WorkerConfig, "MISBEHAVE_COUNT", 0))
-    if misbehave_left > 0:
-        print(f"Worker {WorkerConfig.WORKER_ID}: MISBEHAVE mode enabled for {misbehave_left} task(s)", flush=True)
-
-
     # ---- Main loop ----
     while True:
         # Receive and verify the task envelope
@@ -169,18 +162,12 @@ def main():
         H_MAr = _stable_json_hash(task.get("architecture"))
         H_Me_init = _stable_json_hash(task.get("weights"))
         H_T = _stable_json_hash({"lr": task.get("lr"), "epoch": task.get("epoch")})
+  
 
-        # If we're configured to misbehave, corrupt one of the hashes so the
-        # coordinator will detect a mismatch. This simulates a buggy or
-        # malicious worker. We only do this for `misbehave_left` tasks.
-        if misbehave_left > 0:
-            # simple corruption: flip the first hex nibble to '0' so the
-            # SHA256 won't match. Log the event so it's visible in worker
-            # logs for tests.
-            old = H_Me_init
-            H_Me_init = ("0" * 64)
-            misbehave_left -= 1
-            print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting H_Me_init (was {old[:12]}...) -> {H_Me_init[:12]}...; remaining misbehave={misbehave_left}", flush=True)
+        ## CORRECTNESS TEST: WRONG HASH
+        # old = H_Me_init
+        # H_Me_init = ("0" * 64)
+        # print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting H_Me_init (was {old[:12]}...) -> {H_Me_init[:12]}...; remaining misbehave={misbehave_left}", flush=True)
 
         # Convert updated_state (trained weights) into JSON-serializable form
         trained_weights_json = {}
@@ -195,6 +182,7 @@ def main():
                     trained_weights_json[k] = [float(x) for x in v]
                 except Exception:
                     trained_weights_json[k] = str(v)
+
 
         payload = {
             "worker_id": WorkerConfig.WORKER_ID,
@@ -213,11 +201,26 @@ def main():
             "trained_weights": trained_weights_json,
         }
 
+        # ## CORRECTNESS TEST: WRONG EPOCH 
+        # if int(task.get("epoch", -1)) == 2:
+        #     old_epoch = payload["epoch"]
+        #     payload["epoch"] = 99
+        #     print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting epoch (was {old_epoch}) -> {payload['epoch']}", flush=True)
+
+
         # Sign and send back the result using the established session nonce
         if not session_nonce:
             print(f"Worker {WorkerConfig.WORKER_ID}: no session nonce when sending results; dropping", flush=True)
             continue
         result_envelope = sign_envelope(payload, session_nonce, WorkerConfig.PRIVATE_KEY_PATH)
+
+        # # CORRECTNESS TEST: CHANGE SIGNATURE TO INVALID
+        # old_sig = result_envelope.get("signature")
+        # if old_sig:
+        #     result_envelope["signature"] = "00" * (len(old_sig) // 2)
+        #     print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting signature", flush=True)
+
+
         out_env = {"wid": WorkerConfig.WORKER_ID, "payload": result_envelope}
         sender.send_json(out_env)
         print(f"Worker {WorkerConfig.WORKER_ID}: sent results to coordinator.", flush=True)

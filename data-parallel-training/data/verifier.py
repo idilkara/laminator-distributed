@@ -5,6 +5,7 @@ import hashlib
 import random
 import os
 import time
+import re
 
 import numpy as np
 import torch
@@ -214,6 +215,44 @@ def compute_final_weights_hash_from_file(path: str) -> str | None:
     except Exception:
         return None
 
+def parse_epoch_statuses(report_text: str):
+    """
+    Parse epoch/worker lines of the form:
+
+      Epoch 0:
+        Worker 0: ok
+        Worker 1: invalid_signature -- ...
+
+    Returns:
+      dict[int, list[(worker_id: int, is_ok: bool, raw_status: str)]]
+    """
+    epoch_results = {}
+    current_epoch = None
+
+    for line in report_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        # Match "Epoch N:"
+        m_epoch = re.match(r"Epoch\s+(\d+):", line)
+        if m_epoch:
+            current_epoch = int(m_epoch.group(1))
+            epoch_results.setdefault(current_epoch, [])
+            continue
+
+        # Match "Worker K: <status ...>" only when we're inside an epoch block
+        if current_epoch is not None:
+            m_worker = re.match(r"Worker\s+(\d+):\s*(.*)", line)
+            if m_worker:
+                worker_id = int(m_worker.group(1))
+                rest = m_worker.group(2).strip()
+                # Take the first token as the status keyword (e.g., "ok", "invalid_signature")
+                status_token = rest.split(None, 1)[0].lower() if rest else ""
+                is_ok = (status_token == "ok")
+                epoch_results[current_epoch].append((worker_id, is_ok, rest))
+
+    return epoch_results
 
 # ===================== MAIN =====================
 def main():
@@ -239,7 +278,10 @@ def main():
     print(f"[timing] read report and verify signature: {timings['read_and_verify']:.3f}s")
 
     # ---- 2) Parse hashes from report ----
+    step_start = time.time()
     report_hashes = parse_coordinator_report(report_text)
+    timings["parse_report"] = time.time() - step_start
+    print(f"[timing] parse coordinator report: {timings['parse_report']:.3f}s")
 
     # ---- 3) Recompute global hashes with same logic & hardcoded params ----
     step_start = time.time()
@@ -276,8 +318,9 @@ def main():
     # Attach final weights hash to recomputed dict so we can compare uniformly
     recomputed["H_weights_final"] = final_hash
 
+    # ---- 5) Compare global hashes ----
     print("\nGlobal hash comparison (report vs recomputed):")
-    all_ok = True
+    all_hashes_ok = True
     for key in ["H_dataset", "H_arch", "H_weights_init", "H_config", "H_weights_final"]:
         rep_val = report_hashes.get(key)
         rec_val = recomputed.get(key)
@@ -287,32 +330,63 @@ def main():
             print(f"  ✖ {key} MISMATCH")
             print(f"     report:     {rep_val}")
             print(f"     recomputed: {rec_val}")
-            all_ok = False
+            all_hashes_ok = False
 
-    if all_ok:
-        print("\n✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config).")
+    if all_hashes_ok:
+        print("\n✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).")
     else:
         print("\n✖ One or more global hashes do not match. Check hardcoded params and inputs.")
 
+    # ---- 6) Parse epoch / worker statuses ----
+    step_start = time.time()
+    epoch_statuses = parse_epoch_statuses(report_text)
+    timings["parse_epochs"] = time.time() - step_start
+    print(f"[timing] parse epoch/worker statuses: {timings['parse_epochs']:.3f}s")
+
+    epochs_ok = True
+    failing_epochs = set()
+
+    for epoch, entries in epoch_statuses.items():
+        for worker_id, is_ok, raw_status in entries:
+            if not is_ok:
+                epochs_ok = False
+                failing_epochs.add(epoch)
+
+    if epochs_ok:
+        print("\n✔ All epoch/worker statuses are ok.")
+    else:
+        failing_epochs_list = sorted(failing_epochs)
+        print("\n✖ One or more epochs contain non-ok worker statuses.")
+        print(f"   failing_epochs: {', '.join(str(e) for e in failing_epochs_list)}")
+
+    # ---- 7) Overall timing and result summary ----
     total = time.time() - start_time
     timings["total"] = total
     print(f"[timing] total verifier runtime: {total:.3f}s")
 
-    # ---- Timing summary line with all timings ----
+    # Timing summary line with all timings
     print(
         "timing summary: "
         f"total={timings['total']:.3f}s, "
         f"read_and_verify={timings['read_and_verify']:.3f}s, "
+        f"parse_report={timings['parse_report']:.3f}s, "
         f"recompute_hashes={timings['recompute_hashes']:.3f}s, "
-        f"final_weights_hashing={timings['final_weights_hash']:.3f}s"
+        f"final_weights={timings['final_weights_hash']:.3f}s, "
+        f"parse_epochs={timings['parse_epochs']:.3f}s"
     )
 
-    print(f"summary of timing and results: signature_ok={sig_ok} all_hashes_ok={all_ok} ")
+    overall_ok = sig_ok and all_hashes_ok and epochs_ok
+    print(
+        f"summary of timing and results: "
+        f"signature_ok={sig_ok} "
+        f"hashes_ok={all_hashes_ok} "
+        f"epochs_ok={epochs_ok} "
+        f"overall_ok={overall_ok}"
+    )
 
-    # Optional exit code policy
-    if not sig_ok or not all_ok:
+    # Exit code policy: ANY failure (signature, hashes, or epoch statuses) -> non-zero exit
+    if not overall_ok:
         exit(1)
-
 
 
 if __name__ == "__main__":
