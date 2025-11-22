@@ -21,6 +21,20 @@ docker compose down
 
 This prints a timing summary to the terminal after the stack is stopped.
 
+Automated run logging
+---------------------
+
+Use `collect_run.py` to automate repeated baseline runs and capture the
+coordinator logs in a single file:
+
+```bash
+python collect_run.py              # append one run to run_log.txt
+python collect_run.py --runs 5     # append five runs back-to-back
+```
+
+Pass `--output custom.txt` to store logs in a different file or `--project-dir`
+if you moved the compose stack elsewhere.
+
 Configuration
 
 - MODEL: modify the `model_string` variable in `coordinator/coordinator.py` to change the example model used by the demo.
