@@ -23,6 +23,21 @@ docker compose up --build
      training parameters edit `docker-compose.yaml` or run the coordinator
      locally (see below).
 
+Automated run logging
+---------------------
+
+Use `collect_run.py` to reproduce the manual workflow of launching the
+stack, waiting for the coordinator to exit, capturing its logs, running the
+verifier, and appending both outputs to a single text file:
+
+```bash
+python collect_run.py              # writes/updates run_log.txt in this directory
+python collect_run.py --runs 5     # perform five runs back-to-back
+```
+
+Each invocation adds sections `RUN N` and `VERIFICATION N` (with timestamps)
+to `run_log.txt`. Pass `--output custom.txt` to change the destination file.
+
 Important files
 ---------------
 
@@ -139,6 +154,4 @@ Notes and next steps
     production system you would also harden replay protection, nonce
     management, and key rotation.
 - Use SGX instead of assuming. 
-
-
 
