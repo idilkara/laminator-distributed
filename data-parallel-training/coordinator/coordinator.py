@@ -38,7 +38,8 @@ def train(cfg: CoordinatorConfig):
 
     print("Coordinator started (waiting for worker HELLOs for handshake).", flush=True)
 
-    pending = set(str(i) for i in range(cfg.NUM_WORKERS))
+    pending_hellos = set(str(i) for i in range(cfg.NUM_WORKERS))
+    awaiting_responses = set()
     coord_pub_path = os.path.join(os.path.dirname(cfg.PRIVATE_KEY_PATH), "coordinator_public.pem")
 
     poller = zmq.Poller()
@@ -46,39 +47,43 @@ def train(cfg: CoordinatorConfig):
     poller.register(results_in, zmq.POLLIN)
 
     timeout_seconds = 15
-    start = time.time()
+    loop_start = time.time()
     # record handshake start time (covers HELLO/offer/response phases)
-    handshake_start = time.time()
+    handshake_start = loop_start
 
-    # ---------- Phase 1: wait for HELLO and send offer ----------
-    while pending and (time.time() - start) < timeout_seconds:
+    print("Coordinator: waiting for handshake responses...", flush=True)
+    while (pending_hellos or awaiting_responses) and (time.time() - loop_start) < timeout_seconds:
         events = dict(poller.poll(1000))
+
         if task_out in events:
             ident, msg_bytes = task_out.recv_multipart()
             try:
                 msg = json.loads(msg_bytes.decode())
             except Exception:
+                msg = None
+
+            if not isinstance(msg, dict):
                 continue
 
             wid = str(msg.get("wid"))
-            if msg.get("type") == "hello" and wid in pending:
+            if msg.get("type") == "hello" and wid in pending_hellos:
                 print(f"Coordinator: got HELLO from worker {wid}", flush=True)
-                # create and send handshake offer
                 session_id = f"sess-{wid}-{int(time.time())}"
-                offer = create_handshake_offer(session_id, cfg.PRIVATE_KEY_PATH,
-                                            coordinator_public_key_file=coord_pub_path)
-                # remember the offer so we can validate the worker's response
+                offer = create_handshake_offer(
+                    session_id,
+                    cfg.PRIVATE_KEY_PATH,
+                    coordinator_public_key_file=coord_pub_path,
+                )
                 pending_offers[wid] = offer
                 env = {"wid": wid, "handshake": offer}
-                task_out.send_multipart([ident,
-                    json.dumps(env, separators=(",", ":"), sort_keys=True).encode()])
+                task_out.send_multipart([
+                    ident,
+                    json.dumps(env, separators=(",", ":"), sort_keys=True).encode(),
+                ])
+                awaiting_responses.add(wid)
+                pending_hellos.discard(wid)
                 print(f"Coordinator: sent handshake offer to worker {wid}", flush=True)
 
-    # ---------- Phase 2: collect responses ----------
-    print("Coordinator: waiting for handshake responses...", flush=True)
-    start = time.time()
-    while pending and (time.time() - start) < timeout_seconds:
-        events = dict(poller.poll(1000))
         if results_in in events:
             try:
                 resp_env = results_in.recv_json()
@@ -87,7 +92,7 @@ def train(cfg: CoordinatorConfig):
 
             wid = str(resp_env.get("wid"))
             hresp = resp_env.get("handshake_response")
-            if not hresp or wid not in pending:
+            if not hresp or wid not in awaiting_responses:
                 continue
 
             try:
@@ -95,13 +100,13 @@ def train(cfg: CoordinatorConfig):
                 worker_pub = cfg.WORKER_KEY_PATHS[int(wid)]
             except Exception:
                 print(f"Coordinator: no public key for worker {wid}", flush=True)
-                pending.discard(wid)
+                awaiting_responses.discard(wid)
                 continue
 
             expected = pending_offers.get(wid)
             if expected is None:
                 print(f"Coordinator: no matching offer for worker {wid}; ignoring response", flush=True)
-                pending.discard(wid)
+                awaiting_responses.discard(wid)
                 continue
 
             ok = verify_handshake_response(
@@ -111,17 +116,16 @@ def train(cfg: CoordinatorConfig):
                 expected_nonce=expected.get("nonce"),
             )
             if ok:
-                # store the expected nonce (from our offer) as the session key
                 session_keys[wid] = expected.get("nonce")
-                # cleanup
                 pending_offers.pop(wid, None)
-                pending.discard(wid)
+                awaiting_responses.discard(wid)
                 print(f"Coordinator: handshake completed with worker {wid}", flush=True)
             else:
                 print(f"Coordinator: handshake FAILED for worker {wid}", flush=True)
 
-    if pending:
-        print(f"Coordinator: handshake timed out for workers {sorted(list(pending))}", flush=True)
+    if pending_hellos or awaiting_responses:
+        still_pending = sorted(list(pending_hellos.union(awaiting_responses)), key=int)
+        print(f"Coordinator: handshake timed out for workers {still_pending}", flush=True)
 
     # handshake end/time
     handshake_end = time.time()
