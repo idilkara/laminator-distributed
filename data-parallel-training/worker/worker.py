@@ -1,6 +1,7 @@
 # worker.py
 import random
 import json
+import time
 import zmq
 import numpy as np
 from training import compute_grad_and_loss
@@ -22,6 +23,7 @@ def main():
     sender.connect(WorkerConfig.RESULT_ENDPOINT)
 
     # ---- Handshake ----
+    handshake_start = time.time()
     # Step 1: Send HELLO so coordinator’s ROUTER learns our identity
     hello = {"type": "hello", "wid": WorkerConfig.WORKER_ID}
     receiver.send_json(hello)
@@ -56,9 +58,15 @@ def main():
     # Save session nonce from offer for later message signing/verification
     session_nonce = offer.get("nonce")
     print(f"Worker {WorkerConfig.WORKER_ID}: saved session_id={offer.get('session_id')} nonce={session_nonce}", flush=True)
+    handshake_end = time.time()
+    handshake_time = handshake_end - handshake_start
 
     # Step 5: Continue normal operation
     seen_nonces_tasks = set()
+
+    # --- Timing accumulators ---
+    gradloss_total_time = 0.0
+    gradloss_count = 0
 
     # ---- Main loop ----
     while True:
@@ -84,28 +92,23 @@ def main():
         task = dict(payload_env["message"]) if isinstance(payload_env["message"], dict) else {}
         task.pop("nonce", None)
 
-
         # Handle control/shutdown messages from coordinator.
-        # Accept several common forms so coordinator can send a simple
-        # control envelope like {"control": "SHUTDOWN"} or a bare
-        # string "SHUTDOWN".
         is_shutdown = False
         try:
             if isinstance(task, dict):
-                # common keys that might indicate shutdown
                 if task.get("control") == "SHUTDOWN" :
                     is_shutdown = True
-                # also allow explicit boolean flag
                 if task.get("shutdown") is True:
                     is_shutdown = True
-
         except Exception:
             is_shutdown = False
 
         if is_shutdown:
+            avg_gradloss = (gradloss_total_time / gradloss_count) if gradloss_count > 0 else 0.0
+            print(f"Worker {WorkerConfig.WORKER_ID}: handshake time: {handshake_time:.6f}s", flush=True)
+            print(f"Worker {WorkerConfig.WORKER_ID}: average gradient loss compute time: {avg_gradloss:.6f}s over {gradloss_count} tasks", flush=True)
             print(f"Worker {WorkerConfig.WORKER_ID}: received SHUTDOWN from coordinator; exiting.", flush=True)
             try:
-                # Close sockets and terminate context cleanly
                 receiver.close(linger=0)
                 sender.close(linger=0)
                 ctx.term()
@@ -116,9 +119,13 @@ def main():
         # RECEIVED A TRAINING TASK:
         print(f"Worker {WorkerConfig.WORKER_ID}: received task for epoch {task['epoch']}", flush=True)
         print(len(task['X']), "samples")
-        # Compute gradients, loss and obtain updated (trained) weights
-        # compute_grad_and_loss now returns (grads, loss, n, updated_state_dict)
+        # --- Timing: grad/loss compute ---
+        t_comp_start = time.time()
         grads, loss, n, updated_state = compute_grad_and_loss(task)
+        t_comp_end = time.time()
+        gradloss_time = t_comp_end - t_comp_start
+        gradloss_total_time += gradloss_time
+        gradloss_count += 1
         
 
         # Convert gradients to JSON-serializable format. `grads` may contain
