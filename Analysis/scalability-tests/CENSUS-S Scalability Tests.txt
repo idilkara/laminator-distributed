@@ -1,0 +1,1963 @@
+1. CENSUS-S, 10 epochs, 2 workers
+Scalability test
+Baseline (CENSUS-S, 10 epochs, 2 workers)
+===== RUN 1 (2025-11-22 13:52:42) =====
+container "6c75ad2a0b489c225c70f4ef0aae3e0b3ab77b5ea3725447b4555fd80293a6e2" exited with status code 0
+
+
+Timing summary: preprocess=0.289s | total_training=2.471s | avg_epoch=0.247s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 13:52:53) =====
+container "b34527bfa566245737481fec6a22eb917035664cd1eefa2ea986a4f4f93b7702" exited with status code 0
+
+
+Timing summary: preprocess=0.269s | total_training=2.440s | avg_epoch=0.244s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 13:53:01) =====
+container "f4793eeb807f7b6311ec7acbb73878194a2bff2b573a800194079abfa5fe9890" exited with status code 0
+
+
+Timing summary: preprocess=0.277s | total_training=2.447s | avg_epoch=0.245s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 13:53:08) =====
+container "95fee8a89b696f13b6606677366b954163eeda9886190e826f273bb9909d3ed6" exited with status code 0
+
+
+Timing summary: preprocess=0.276s | total_training=2.526s | avg_epoch=0.253s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 13:53:15) =====
+container "343847cbf2c4ed67e3f831a39cf7179ca7c3f97c8e207fa459bad825cab846de" exited with status code 0
+
+
+Timing summary: preprocess=0.285s | total_training=2.492s | avg_epoch=0.249s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 10 epochs, 2 workers)
+===== RUN 1 (2025-11-22 14:00:51) =====
+container "10a1d9b0b95131eb6a2208548e86e8997cc7e914195f6459961fe633d032cff9" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.118s | preprocess=0.283s | total_training=5.742s | avg_epoch=0.574s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 14:00:51) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.018s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.455s
+[timing] compute final_weights hash (file lookup): 0.006s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.479s
+timing summary: total=0.479s, read_and_verify=0.018s, parse_report=0.000s, recompute_hashes=0.455s, final_weights=0.006s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 14:01:07) =====
+container "b6f125e45575a249747bd7cbf13eb0dfe363811f945d961fd6112b22545fe378" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.182s | preprocess=0.285s | total_training=6.034s | avg_epoch=0.603s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 14:01:07) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.462s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.483s
+timing summary: total=0.483s, read_and_verify=0.015s, parse_report=0.001s, recompute_hashes=0.462s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 14:01:21) =====
+container "d3362f6804a60aab8ed62ac3f9af37a23511dd40b99b789cdf5efcbf2dc241e2" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.187s | preprocess=0.313s | total_training=6.012s | avg_epoch=0.601s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 14:01:21) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.468s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.490s
+timing summary: total=0.490s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.468s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 14:01:34) =====
+container "2d47a7b7205d1b006e6f26494362885881d32e536fb0e49170963fa94a4dc7c7" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.188s | preprocess=0.591s | total_training=5.734s | avg_epoch=0.573s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 14:01:34) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.417s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.438s
+timing summary: total=0.438s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.417s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 14:01:48) =====
+container "4859bc4b31e8597a204b976d127328014b0853fd6b1db76c1c9af6acb72ef6c2" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=cf71b11be96fa8b6b14d47fa055150a6fdd58287ea8d1ef56acf44b0359edd45
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.126s | preprocess=0.297s | total_training=6.144s | avg_epoch=0.614s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 14:01:48) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.420s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.441s
+timing summary: total=0.441s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.420s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+For all runs:
+hash_report.txt size (bytes): 268746
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255456
+
+2. CENSUS-S, 10 epochs, 4 workers
+Scalability test
+Baseline (CENSUS-S, 10 epochs, 4 workers)
+===== RUN 1 (2025-11-22 14:16:15) =====
+container "726684cf59f8953f38dd253aeab2f9bf4970247d0c885a3e975a165a50ff41e8" exited with status code 0
+
+
+Timing summary: preprocess=0.270s | total_training=2.071s | avg_epoch=0.207s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 14:16:22) =====
+container "5ead9d6cf3a0f5c355dfbda03331a86c70d379876884b814ddfad60e305c0ee0" exited with status code 0
+
+
+Timing summary: preprocess=0.298s | total_training=2.185s | avg_epoch=0.219s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 14:16:30) =====
+container "aef68972a744771e50e40d28cf77985f2c737793d0745f5158114b2e08e3cd59" exited with status code 0
+
+
+Timing summary: preprocess=0.307s | total_training=2.187s | avg_epoch=0.219s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 14:16:37) =====
+container "5f04e8c95a3653c81eb8ec5234f53fef3af301a9a418a61927e71d190fd2827a" exited with status code 0
+
+
+Timing summary: preprocess=0.293s | total_training=2.163s | avg_epoch=0.216s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 14:16:44) =====
+container "2bde354cc1e35880629436b02bf042d0ab28affdf1fbb0ac4d5f776f014d040b" exited with status code 0
+
+
+Timing summary: preprocess=0.320s | total_training=2.448s | avg_epoch=0.245s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 10 epochs, 4 workers)
+===== RUN 1 (2025-11-22 14:19:06) =====
+container "f73dea857d3cc644b94f30310046acdae0e544da93fce73e728fb7200d9c035b" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f527872754cff48f2b59ab854e4c1a27004350f91989602094bb956b6f1322bd
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.141s | preprocess=0.299s | total_training=5.663s | avg_epoch=0.566s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 14:19:06) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.455s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.477s
+timing summary: total=0.477s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.455s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 14:19:20) =====
+container "4cf0fc5f055b4e91d6b065786520bb09746f4ca8a605e1ac54c1ee00ddd5e826" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f527872754cff48f2b59ab854e4c1a27004350f91989602094bb956b6f1322bd
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.150s | preprocess=0.278s | total_training=5.675s | avg_epoch=0.567s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 14:19:20) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.449s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.470s
+timing summary: total=0.470s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.449s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 14:19:34) =====
+container "67e10997b1c810ee11cfd1e835f27e81bfa137f84c0e7aa4f212cd708fc2ceee" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f527872754cff48f2b59ab854e4c1a27004350f91989602094bb956b6f1322bd
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.191s | preprocess=0.349s | total_training=6.150s | avg_epoch=0.615s | report_generation=0.035s
+Coordinator: report generation time: 0.035s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 14:19:34) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.019s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.472s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.498s
+timing summary: total=0.498s, read_and_verify=0.019s, parse_report=0.001s, recompute_hashes=0.472s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 14:19:48) =====
+container "a5ed5a4bf5d80efb40c9117d7bf3568f638ea54225a13cdc4cb768f91ce03251" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f527872754cff48f2b59ab854e4c1a27004350f91989602094bb956b6f1322bd
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.202s | preprocess=0.307s | total_training=5.715s | avg_epoch=0.571s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 14:19:48) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.621s
+[timing] compute final_weights hash (file lookup): 0.006s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.644s
+timing summary: total=0.644s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.621s, final_weights=0.006s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 14:20:02) =====
+container "dbb36c40a0641e54581b48637ff5ef4e81e55d7d3d6b4624eb74e37b61e0048d" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f527872754cff48f2b59ab854e4c1a27004350f91989602094bb956b6f1322bd
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.233s | preprocess=0.303s | total_training=5.972s | avg_epoch=0.597s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 14:20:02) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.509s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.531s
+timing summary: total=0.531s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.509s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+For all runs:
+hash_report.txt size (bytes): 269059
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255469
+
+3. CENSUS-S, 10 epochs, 8 workers
+Scalability test
+Baseline (CENSUS-S, 10 epochs, 8 workers)
+===== RUN 1 (2025-11-22 14:25:09) =====
+container "441166783e2d41201fb0fecd60f0b39235149c519b58f2bf508c8a5c0817ad9b" exited with status code 0
+
+
+Timing summary: preprocess=0.305s | total_training=2.365s | avg_epoch=0.236s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 14:25:18) =====
+container "fbaa95ced5f4e45289bc7c3d36f2ec3992dbc3bab6bd026037bbf3dedd87d608" exited with status code 0
+
+
+Timing summary: preprocess=0.318s | total_training=2.360s | avg_epoch=0.236s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 14:25:28) =====
+container "c4c759746429bf51ba716f50c05650f5c7d850f9ad612a73df160a3cfe96441f" exited with status code 0
+
+
+Timing summary: preprocess=0.320s | total_training=2.416s | avg_epoch=0.242s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 14:25:37) =====
+container "6bff74cf15b320aaa24f67617e56fea82f1f3388ddb9666d2904050068858035" exited with status code 0
+
+
+Timing summary: preprocess=0.292s | total_training=2.420s | avg_epoch=0.242s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 14:25:47) =====
+container "db8b12d571b6c7aaf5562d7a0ba6cbcde026594a04c3e99b281806a4861d1b3e" exited with status code 0
+
+
+Timing summary: preprocess=0.293s | total_training=2.475s | avg_epoch=0.248s
+Coordinator: sent SHUTDOWN to workers
+
+
+With Attestation (CENSUS-S, 10 epochs, 8 workers)
+===== RUN 1 (2025-11-22 14:27:52) =====
+container "8f848e23e4e7989553d7a8439726a6d90fd58edb8c580ea9dc933a2f781144c0" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=e2678c0c549bc497869ae05418d27405350a6eac091cdd1c3916d20ec351537e
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.277s | preprocess=0.279s | total_training=7.360s | avg_epoch=0.736s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 14:27:52) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.515s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.536s
+timing summary: total=0.536s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.515s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 14:28:10) =====
+container "908b4d879b0abf3ee287cfd0b29c3df98ee12616b91a1ac96c93e2825155bf03" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=e2678c0c549bc497869ae05418d27405350a6eac091cdd1c3916d20ec351537e
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.229s | preprocess=0.304s | total_training=7.383s | avg_epoch=0.738s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 14:28:10) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.473s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.495s
+timing summary: total=0.495s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.473s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 14:28:27) =====
+container "e840c3dc08ea272ef8e9525cd0efecf163b4945a77b0860a4f7e1fcf19176984" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=e2678c0c549bc497869ae05418d27405350a6eac091cdd1c3916d20ec351537e
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.257s | preprocess=0.309s | total_training=7.371s | avg_epoch=0.737s | report_generation=0.037s
+Coordinator: report generation time: 0.037s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 14:28:27) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.017s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.504s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.527s
+timing summary: total=0.527s, read_and_verify=0.017s, parse_report=0.001s, recompute_hashes=0.504s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 14:28:43) =====
+container "98e65fb1f65af818e0b9c29b8a89c9037a78579c3f177855a5ad2e15f23ff3de" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=e2678c0c549bc497869ae05418d27405350a6eac091cdd1c3916d20ec351537e
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.202s | preprocess=0.293s | total_training=6.930s | avg_epoch=0.693s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 14:28:43) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.467s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.489s
+timing summary: total=0.489s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.467s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 14:29:00) =====
+container "c4ca57b519c63d5ea3a3d3f4d127585255526123773df17081c7a6ad1011888a" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=e2678c0c549bc497869ae05418d27405350a6eac091cdd1c3916d20ec351537e
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.240s | preprocess=0.282s | total_training=6.896s | avg_epoch=0.690s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 14:29:00) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.448s
+[timing] compute final_weights hash (file lookup): 0.006s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.470s
+timing summary: total=0.470s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.448s, final_weights=0.006s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+
+For all runs:
+hash_report.txt size (bytes): 269635
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255445
+
+
+
+
+
+4. CENSUS-S, 50 epochs, 2 workers
+Scalability test
+Baseline (CENSUS-S, 50 epochs, 2 workers)
+===== RUN 1 (2025-11-30 11:55:35) =====
+container "bb194c9538117693a66d5c7826ff87c38a40968f24634ca7d17a2acab8b6a3a5" exited with status code 0
+
+
+Timing summary: preprocess=0.279s | total_training=11.959s | avg_epoch=0.239s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-30 11:55:52) =====
+container "8efe4e24ac7ce1a8fc525fc8c49808fdee1b90a9b3e47239fd8fe13eec02c536" exited with status code 0
+
+
+Timing summary: preprocess=0.287s | total_training=12.314s | avg_epoch=0.246s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-30 11:56:09) =====
+container "30d228a9b5b8da6f4df5870d86de034ad00a18d913c363fd68aa6ac155c9459b" exited with status code 0
+
+
+Timing summary: preprocess=0.281s | total_training=11.968s | avg_epoch=0.239s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-30 11:56:26) =====
+container "d605c512f0f21ac88211a12d18ddc2fb28c1b6c5b23bcbad2f74cf5f8b4ddebf" exited with status code 0
+
+
+Timing summary: preprocess=0.277s | total_training=11.850s | avg_epoch=0.237s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-30 11:56:42) =====
+container "b17a70625f569f63191d75719dc8145ede23a4fb2fb0996f0519888484dff7f4" exited with status code 0
+
+
+Timing summary: preprocess=0.275s | total_training=12.016s | avg_epoch=0.240s
+Coordinator: sent SHUTDOWN to workers
+
+
+
+With Attestation (CENSUS-S, 50 epochs, 2 workers)
+===== RUN 1 (2025-11-22 14:45:01) =====
+container "bd71a1abe6e9cf63c8a3d3796ce2cb79c959d8fae13b64ae46d20d113ecb5099" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f089e46d5e3f0238d020bf8047b533aa0ad7a5a439f90865f4515c0d2f96d140
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.186s | preprocess=0.277s | total_training=27.795s | avg_epoch=0.556s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 14:45:01) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.025s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.468s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.498s
+timing summary: total=0.498s, read_and_verify=0.025s, parse_report=0.000s, recompute_hashes=0.468s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 14:45:37) =====
+container "92ad1b9edd1c83be03ac761c388672182ea145841b931fd83fbc26899cef862d" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f089e46d5e3f0238d020bf8047b533aa0ad7a5a439f90865f4515c0d2f96d140
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.193s | preprocess=0.305s | total_training=27.907s | avg_epoch=0.558s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 14:45:37) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.410s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.431s
+timing summary: total=0.431s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.410s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 14:46:13) =====
+container "a5acac099215a2e299a530c6a3399e7ab1895c366781b0c018e3f7d829ff42aa" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f089e46d5e3f0238d020bf8047b533aa0ad7a5a439f90865f4515c0d2f96d140
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.193s | preprocess=0.279s | total_training=28.410s | avg_epoch=0.568s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 14:46:13) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.425s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.447s
+timing summary: total=0.447s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.425s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 14:46:48) =====
+container "c69b54eb91c87f723aa4c2e1544c48728f3824a10e4fe49892928394dd67fcc8" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f089e46d5e3f0238d020bf8047b533aa0ad7a5a439f90865f4515c0d2f96d140
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.155s | preprocess=0.275s | total_training=28.696s | avg_epoch=0.574s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 14:46:48) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.499s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.521s
+timing summary: total=0.521s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.499s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 14:47:25) =====
+container "0623c7e7f682621d8d50c358f79e1a8f50ee153242b7614ea1e160cebaf1e742" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=f089e46d5e3f0238d020bf8047b533aa0ad7a5a439f90865f4515c0d2f96d140
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.153s | preprocess=0.291s | total_training=28.580s | avg_epoch=0.572s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 14:47:25) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.550s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.571s
+timing summary: total=0.571s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.550s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+For all runs:
+hash_report.txt size (bytes): 270555
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255625
+
+5. CENSUS-S, 50 epochs, 4 workers
+Scalability test
+Baseline (CENSUS-S, 50 epochs, 4 workers)
+===== RUN 1 (2025-11-22 14:51:37) =====
+container "a891113e34131a42dd88a3adae39ef5cabbdc669316377820370a496bd2b8c6b" exited with status code 0
+
+
+Timing summary: preprocess=0.273s | total_training=10.624s | avg_epoch=0.212s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 14:51:54) =====
+container "91b7ef4e659bdbac0424eca53410e51cc8230f38c6f8b762819d5502bb14bed7" exited with status code 0
+
+
+Timing summary: preprocess=0.283s | total_training=10.607s | avg_epoch=0.212s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 14:52:10) =====
+container "d3df553a1abe37c66a4bce42f9eef70fcdfa92264d40f6cec397085725efea20" exited with status code 0
+
+
+Timing summary: preprocess=0.305s | total_training=10.378s | avg_epoch=0.208s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 14:52:26) =====
+container "130a3d70b27e5377bc3439ce7bc8d1dadeb9e26d1ae408929d5fc9640c21d27b" exited with status code 0
+
+
+Timing summary: preprocess=0.294s | total_training=10.804s | avg_epoch=0.216s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 14:52:42) =====
+container "be4bd51e2365147c52223cd3bfc0c08a9808fda98a29644faf41104c51a99b8f" exited with status code 0
+
+
+Timing summary: preprocess=0.285s | total_training=11.041s | avg_epoch=0.221s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 50 epochs, 4 workers)
+===== RUN 1 (2025-11-22 14:54:27) =====
+container "b98913d7ed2b9f5b2ba3cec770abff41bb90ab4935e0872a6ba749a6671c92fc" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=7c7125262c8f79aa84015932dd5f37f757d7182eaa21d74b17354a0dc2d5b611
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.180s | preprocess=0.305s | total_training=28.653s | avg_epoch=0.573s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 14:54:27) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.432s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.454s
+timing summary: total=0.454s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.432s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 14:55:04) =====
+container "f5c652d71a827bb652855190dcdfd12cd0050a2403b5852c80b617b096843c30" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=7c7125262c8f79aa84015932dd5f37f757d7182eaa21d74b17354a0dc2d5b611
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.193s | preprocess=0.274s | total_training=28.270s | avg_epoch=0.565s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 14:55:04) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.489s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.510s
+timing summary: total=0.510s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.489s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 14:55:40) =====
+container "8d2c57a55a542ba1d42f68810c720428fd430c02f0c63d3a2051379f67908eb9" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=7c7125262c8f79aa84015932dd5f37f757d7182eaa21d74b17354a0dc2d5b611
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.187s | preprocess=0.289s | total_training=28.287s | avg_epoch=0.566s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 14:55:40) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.469s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.490s
+timing summary: total=0.490s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.469s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 14:56:17) =====
+container "64e34719a357b09f5bf3d3a5605e80d15ebf028364897533d54a3b99be2e4c26" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=7c7125262c8f79aa84015932dd5f37f757d7182eaa21d74b17354a0dc2d5b611
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.235s | preprocess=0.294s | total_training=28.551s | avg_epoch=0.571s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 14:56:17) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.411s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.433s
+timing summary: total=0.433s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.411s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 14:56:54) =====
+container "632c82258f8bbdabb4190dc01a5311682daefb3f02619fe99e89c8bb54c97b1b" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=7c7125262c8f79aa84015932dd5f37f757d7182eaa21d74b17354a0dc2d5b611
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.236s | preprocess=0.283s | total_training=28.455s | avg_epoch=0.569s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 14:56:54) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.504s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.526s
+timing summary: total=0.526s, read_and_verify=0.016s, parse_report=0.000s, recompute_hashes=0.504s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+For all runs:
+hash_report.txt size (bytes): 272065
+ hash_report.txt.sig size (bytes): 606 
+ final_weights.json size (bytes): 255635
+
+6. CENSUS-S, 50 epochs, 8 workers
+Scalability test
+Baseline (CENSUS-S, 50 epochs, 8 workers)
+===== RUN 1 (2025-11-22 15:41:55) =====
+container "fbeb4b0ef54e08030a7c7ed9d6f5fff5d4aa65a07b153ebb2789ff9f83e364b8" exited with status code 0
+
+
+Timing summary: preprocess=0.314s | total_training=12.032s | avg_epoch=0.241s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 15:42:15) =====
+container "466f0f366d4f949f0868fd2d64917394df0cbd496a74efc29ade60ef0f37c219" exited with status code 0
+
+
+Timing summary: preprocess=0.298s | total_training=12.039s | avg_epoch=0.241s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 15:42:34) =====
+container "8375f54b3cbfcd56175674b4d6a2c8dd1db9c7069c14111bd736a5e6eb12cb7c" exited with status code 0
+
+
+Timing summary: preprocess=0.322s | total_training=11.468s | avg_epoch=0.229s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 15:42:54) =====
+container "25d8efe527cd7d764d4bd1a69ed8c0efcd671bc7bb256baac85857a87ddbf7f0" exited with status code 0
+
+
+Timing summary: preprocess=0.309s | total_training=11.543s | avg_epoch=0.231s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 15:43:12) =====
+container "3d55a8183065e071899412f2da4e4ba052484208b3b10cc4eae9301fc7a8afae" exited with status code 0
+
+
+Timing summary: preprocess=0.294s | total_training=11.286s | avg_epoch=0.226s
+Coordinator: sent SHUTDOWN to workers
+With Attestation (CENSUS-S, 50 epochs, 8 workers)
+===== RUN 1 (2025-11-22 15:44:01) =====
+container "e5a2896dbb721722a6746471bbb01e97a5df33085a884b6f7813a0695cd1a017" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=06b1c2f6545cf8e5056523fce24fe174d8c8d1884b42c87a2a6b461426f79d59
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.227s | preprocess=0.294s | total_training=35.827s | avg_epoch=0.717s | report_generation=0.034s
+Coordinator: report generation time: 0.034s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 15:44:01) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.543s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.566s
+timing summary: total=0.566s, read_and_verify=0.016s, parse_report=0.001s, recompute_hashes=0.543s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 15:44:47) =====
+container "d66f4180ee953bdd66e02c4f8daeb1a6755e4fbf9d5589baa7cfc2095fa8220b" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=06b1c2f6545cf8e5056523fce24fe174d8c8d1884b42c87a2a6b461426f79d59
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.265s | preprocess=0.322s | total_training=35.903s | avg_epoch=0.718s | report_generation=0.034s
+Coordinator: report generation time: 0.034s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 15:44:47) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.018s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.488s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.513s
+timing summary: total=0.513s, read_and_verify=0.018s, parse_report=0.001s, recompute_hashes=0.488s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 15:45:33) =====
+container "2fda214da277bfee0456d03a9c6a4f0f5ff4085364d22da45932a40441ec52d7" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=06b1c2f6545cf8e5056523fce24fe174d8c8d1884b42c87a2a6b461426f79d59
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.305s | preprocess=0.294s | total_training=35.548s | avg_epoch=0.711s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 15:45:33) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.487s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.510s
+timing summary: total=0.510s, read_and_verify=0.016s, parse_report=0.001s, recompute_hashes=0.487s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 15:46:19) =====
+container "839eaec6e426e1d20da4427a2cfe25e55f845bbcd2ab38f865bca3658813c9a1" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=06b1c2f6545cf8e5056523fce24fe174d8c8d1884b42c87a2a6b461426f79d59
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.232s | preprocess=0.285s | total_training=35.661s | avg_epoch=0.713s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 15:46:19) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.435s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.457s
+timing summary: total=0.457s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.435s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 15:47:04) =====
+container "632cfcc83c7cd71468441542a330627ebcaec872d4b9b494f87a8aea9b691f9a" exited with status code 0
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=06b1c2f6545cf8e5056523fce24fe174d8c8d1884b42c87a2a6b461426f79d59
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.239s | preprocess=0.272s | total_training=35.007s | avg_epoch=0.700s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 15:47:04) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.017s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.478s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.502s
+timing summary: total=0.502s, read_and_verify=0.017s, parse_report=0.000s, recompute_hashes=0.478s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+For all runs:
+hash_report.txt size (bytes): 275034
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255604
+
+
+
+7. CENSUS-S, 100 epochs, 2 workers
+Scalability test
+Baseline (CENSUS-S, 100 epochs, 2 workers)
+===== RUN 1 (2025-11-22 15:53:13) =====
+container "ee89df9c1b71d18d7fe44b97929e0b38ade8324e4af450de54dff38dde48cfd7" exited with status code 0
+
+
+Timing summary: preprocess=0.294s | total_training=23.075s | avg_epoch=0.231s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 15:53:41) =====
+container "e3653400d98bf989fb447d7b3cfee69c17d33508e9ef8970ca0a62d781ff3acf" exited with status code 0
+
+
+Timing summary: preprocess=0.274s | total_training=22.775s | avg_epoch=0.228s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 15:54:08) =====
+container "e34e68013b5f336fca361da3dd74e67d11e9d91c013dafc08fd5ad22dcfca3a5" exited with status code 0
+
+
+Timing summary: preprocess=0.277s | total_training=22.798s | avg_epoch=0.228s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 15:54:36) =====
+container "90a87a9006998e545b3a3098a81aff3f4672b2333427b0e4b6247b5166acd2cb" exited with status code 0
+
+
+Timing summary: preprocess=0.269s | total_training=22.624s | avg_epoch=0.226s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 15:55:03) =====
+container "d0398988d3f04306df082ab89cb4821f28a81f4e6772525ea8fbd3343e114573" exited with status code 0
+
+
+Timing summary: preprocess=0.263s | total_training=22.791s | avg_epoch=0.228s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 100 epochs, 2 workers)
+===== RUN 1 (2025-11-22 15:56:50) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=0d22e2279c0cacb561d24d5bd1c1c1f1832d3b8ea6244e467ca910439566f905
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.225s | preprocess=0.267s | total_training=57.067s | avg_epoch=0.571s | report_generation=0.039s
+Coordinator: report generation time: 0.039s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 15:56:50) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.442s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.464s
+timing summary: total=0.464s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.442s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 15:57:55) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=0d22e2279c0cacb561d24d5bd1c1c1f1832d3b8ea6244e467ca910439566f905
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.204s | preprocess=0.270s | total_training=56.593s | avg_epoch=0.566s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 15:57:55) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.460s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.481s
+timing summary: total=0.481s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.460s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 15:58:59) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=0d22e2279c0cacb561d24d5bd1c1c1f1832d3b8ea6244e467ca910439566f905
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.193s | preprocess=0.278s | total_training=56.325s | avg_epoch=0.563s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 15:58:59) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.018s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.413s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.437s
+timing summary: total=0.437s, read_and_verify=0.018s, parse_report=0.001s, recompute_hashes=0.413s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 16:00:02) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=0d22e2279c0cacb561d24d5bd1c1c1f1832d3b8ea6244e467ca910439566f905
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.175s | preprocess=0.284s | total_training=55.833s | avg_epoch=0.558s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 16:00:02) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.017s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.442s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.465s
+timing summary: total=0.465s, read_and_verify=0.017s, parse_report=0.000s, recompute_hashes=0.442s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 16:01:06) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=0d22e2279c0cacb561d24d5bd1c1c1f1832d3b8ea6244e467ca910439566f905
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.198s | preprocess=0.278s | total_training=56.070s | avg_epoch=0.561s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 16:01:06) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.454s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.000s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.475s
+timing summary: total=0.475s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.454s, final_weights=0.005s, parse_epochs=0.000s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+For all runs:
+hash_report.txt size (bytes): 272544
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255564
+
+8. CENSUS-S, 100 epochs, 4 workers
+Scalability test
+Baseline (CENSUS-S, 100 epochs, 4 workers)
+===== RUN 1 (2025-11-22 16:25:43) =====
+container "c6234bea7a39d42d23f459d5ae578b28c6a231d4d3964c013c48d4caea5edfbc" exited with status code 0
+
+
+Timing summary: preprocess=0.306s | total_training=21.559s | avg_epoch=0.216s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 16:26:13) =====
+container "6ea93661f5b335642d3d7f53f130b4a77afa1731f4b8a3d938e8a9c28aa445d4" exited with status code 0
+
+
+Timing summary: preprocess=0.284s | total_training=20.356s | avg_epoch=0.204s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 16:26:39) =====
+container "d431e86f375910f038db877af73d73cc9bedcba5b40d2c21f81b56c1a3387ecf" exited with status code 0
+
+
+Timing summary: preprocess=0.277s | total_training=20.067s | avg_epoch=0.201s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 16:27:04) =====
+container "9e64d9cd1d10f8ed05f287b34c712c1f4a9a2494d661bc4f0467c99f9b426539" exited with status code 0
+
+
+Timing summary: preprocess=0.268s | total_training=20.261s | avg_epoch=0.203s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 16:27:29) =====
+container "a4c99f0bd29355c0b5da957f3b2c636660f64ddf59e8b224cc59fe8c13f6e3d2" exited with status code 0
+
+
+Timing summary: preprocess=0.298s | total_training=19.995s | avg_epoch=0.200s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 100 epochs, 4 workers)
+===== RUN 1 (2025-11-22 16:30:18) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=4870958aff7d0f92221a09c88399b61a5067336d7e7a8da73cdbeb30ad821508
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.193s | preprocess=0.293s | total_training=55.855s | avg_epoch=0.559s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 16:30:18) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.024s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.447s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.478s
+timing summary: total=0.478s, read_and_verify=0.024s, parse_report=0.000s, recompute_hashes=0.447s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 16:31:25) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=4870958aff7d0f92221a09c88399b61a5067336d7e7a8da73cdbeb30ad821508
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.212s | preprocess=0.286s | total_training=55.757s | avg_epoch=0.558s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 16:31:25) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.452s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.472s
+timing summary: total=0.472s, read_and_verify=0.015s, parse_report=0.000s, recompute_hashes=0.452s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 16:32:29) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=4870958aff7d0f92221a09c88399b61a5067336d7e7a8da73cdbeb30ad821508
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.222s | preprocess=0.274s | total_training=56.409s | avg_epoch=0.564s | report_generation=0.036s
+Coordinator: report generation time: 0.036s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 16:32:29) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.018s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.483s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.507s
+timing summary: total=0.507s, read_and_verify=0.018s, parse_report=0.000s, recompute_hashes=0.483s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 16:33:34) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=4870958aff7d0f92221a09c88399b61a5067336d7e7a8da73cdbeb30ad821508
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.152s | preprocess=0.296s | total_training=55.889s | avg_epoch=0.559s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 16:33:34) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.014s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.472s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.493s
+timing summary: total=0.493s, read_and_verify=0.014s, parse_report=0.000s, recompute_hashes=0.472s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 16:34:38) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=4870958aff7d0f92221a09c88399b61a5067336d7e7a8da73cdbeb30ad821508
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.213s | preprocess=0.275s | total_training=55.994s | avg_epoch=0.560s | report_generation=0.031s
+Coordinator: report generation time: 0.031s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 16:34:38) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.017s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.413s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.436s
+timing summary: total=0.436s, read_and_verify=0.017s, parse_report=0.000s, recompute_hashes=0.413s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+For all runs:
+hash_report.txt size (bytes): 275525
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255545
+
+9. CENSUS-S, 100 epochs, 8 workers
+Scalability test
+Baseline (CENSUS-S, 100 epochs, 8 workers)
+===== RUN 1 (2025-11-22 16:47:16) =====
+container "35aae5a4966666ad1de38de95cd2fa7615b187d9fc1aa78a88c8f21054204d73" exited with status code 0
+
+
+Timing summary: preprocess=0.314s | total_training=23.354s | avg_epoch=0.234s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 2 (2025-11-22 16:47:47) =====
+container "cd2a12aad63c5234a79732dccf7e3cfb57968d00927ca0a5bd9361944c93d02d" exited with status code 0
+
+
+Timing summary: preprocess=0.313s | total_training=23.096s | avg_epoch=0.231s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 3 (2025-11-22 16:48:17) =====
+container "9bad47414359bf45d9ba7cea7ecb9ba6582ae91e8e5eef03803f2b76f2a49944" exited with status code 0
+
+
+Timing summary: preprocess=0.283s | total_training=22.775s | avg_epoch=0.228s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 4 (2025-11-22 16:48:46) =====
+container "de2ac77f733e5f2be01eee5ed58c7af2046059048b09e898fa4abd485136cb50" exited with status code 0
+
+
+Timing summary: preprocess=0.309s | total_training=23.722s | avg_epoch=0.237s
+Coordinator: sent SHUTDOWN to workers
+
+===== RUN 5 (2025-11-22 16:49:17) =====
+container "1ac5d784c669ffd0105154143bc5cb7cb3157b041b3ea78d1163f432c77ce447" exited with status code 0
+
+
+Timing summary: preprocess=0.276s | total_training=22.292s | avg_epoch=0.223s
+Coordinator: sent SHUTDOWN to workers
+
+With Attestation (CENSUS-S, 100 epochs, 8 workers)
+===== RUN 1 (2025-11-22 16:53:11) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=99ccd86ecb085f5c4ba13ef1dcb470c250e4af9138127180686d621e41ac8673
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.218s | preprocess=0.289s | total_training=72.586s | avg_epoch=0.726s | report_generation=0.038s
+Coordinator: report generation time: 0.038s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 1 (2025-11-22 16:53:11) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.017s
+[timing] parse coordinator report: 0.000s
+[timing] recompute global hashes: 0.499s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.523s
+timing summary: total=0.523s, read_and_verify=0.017s, parse_report=0.000s, recompute_hashes=0.499s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 2 (2025-11-22 16:54:35) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=99ccd86ecb085f5c4ba13ef1dcb470c250e4af9138127180686d621e41ac8673
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.274s | preprocess=0.356s | total_training=72.449s | avg_epoch=0.724s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 2 (2025-11-22 16:54:35) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.475s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.497s
+timing summary: total=0.497s, read_and_verify=0.015s, parse_report=0.001s, recompute_hashes=0.475s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 3 (2025-11-22 16:55:58) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=99ccd86ecb085f5c4ba13ef1dcb470c250e4af9138127180686d621e41ac8673
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.256s | preprocess=0.314s | total_training=74.796s | avg_epoch=0.748s | report_generation=0.036s
+Coordinator: report generation time: 0.036s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 3 (2025-11-22 16:55:58) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.492s
+[timing] compute final_weights hash (file lookup): 0.007s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.516s
+timing summary: total=0.516s, read_and_verify=0.015s, parse_report=0.001s, recompute_hashes=0.492s, final_weights=0.007s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 4 (2025-11-22 16:57:23) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=99ccd86ecb085f5c4ba13ef1dcb470c250e4af9138127180686d621e41ac8673
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.244s | preprocess=0.294s | total_training=75.067s | avg_epoch=0.751s | report_generation=0.032s
+Coordinator: report generation time: 0.032s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 4 (2025-11-22 16:57:23) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.016s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.449s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.472s
+timing summary: total=0.472s, read_and_verify=0.016s, parse_report=0.001s, recompute_hashes=0.449s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+===== RUN 5 (2025-11-22 16:58:48) =====
+
+
+----- Verification report -----
+Global hashes summary: H_dataset=4588ffe90ab2e355722850bb2976c3ed81869cf35d1c66534f3baaaecef35285, H_arch=ed05eea494de0e281f65488573245708d906cd697ff606f487af47dbabefda8e, H_weights_init=8aaa31f6ffdf14983829c9d891653de16b30c73b1276942ae0dead0d0dc3e6b9, H_config=99ccd86ecb085f5c4ba13ef1dcb470c250e4af9138127180686d621e41ac8673
+Coordinator: wrote final weights to /app/data/final_weights.json
+Coordinator: wrote report signature to /app/data/hash_report.txt.sig
+
+Timing summary: handshake=0.362s | preprocess=0.449s | total_training=76.796s | avg_epoch=0.768s | report_generation=0.033s
+Coordinator: report generation time: 0.033s
+Coordinator: sent SHUTDOWN to all workers
+
+===== VERIFICATION 5 (2025-11-22 16:58:48) =====
+✔ Signature is VALID: hash_report.txt was signed by the coordinator key.
+[timing] read report and verify signature: 0.015s
+[timing] parse coordinator report: 0.001s
+[timing] recompute global hashes: 0.473s
+[timing] compute final_weights hash (file lookup): 0.005s
+
+Global hash comparison (report vs recomputed):
+  ✔ H_dataset MATCHES
+  ✔ H_arch MATCHES
+  ✔ H_weights_init MATCHES
+  ✔ H_config MATCHES
+  ✔ H_weights_final MATCHES
+
+✔ All coordinator global hashes match (H_dataset, H_arch, H_weights_init, H_config, H_weights_final).
+[timing] parse epoch/worker statuses: 0.001s
+
+✔ All epoch/worker statuses are ok.
+[timing] total verifier runtime: 0.494s
+timing summary: total=0.494s, read_and_verify=0.015s, parse_report=0.001s, recompute_hashes=0.473s, final_weights=0.005s, parse_epochs=0.001s
+summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
+
+For all runs:
+hash_report.txt size (bytes): 281529
+ hash_report.txt.sig size (bytes): 606
+ final_weights.json size (bytes): 255549
+
+
