@@ -148,6 +148,7 @@ C_HASH = "#76b7b2"
 C_HASH_VERIFY = "#ff9da7"
 C_REPORT = "#edc949"
 
+
 def plot_bar(model, mode, subset):
     """Stacked bar per component (means only)."""
     means = subset.iloc[0]
@@ -190,3 +191,63 @@ def plot_bar(model, mode, subset):
 # One bar per (model, mode)
 for (model, mode), group in agg.groupby(["model", "mode"]):
     plot_bar(model, mode, group)
+
+
+def plot_grid(all_rows: pd.DataFrame):
+    """Combined 2x2 grid with shared Y-axis for easy comparison."""
+    # Fixed ordering to keep layout predictable
+    order = [
+        ("CENSUS-S", "baseline"),
+        ("CENSUS-S", "attested"),
+        ("CENSUS-L", "baseline"),
+        ("CENSUS-L", "attested"),
+    ]
+    parts = [
+        ("Handshake", "handshake_mean_s", C_HANDSHAKE),
+        ("Preprocess", "preprocess_mean_s", C_PRE),
+        ("Gradient (approx)", "gradient_mean_s", C_GRAD),
+        ("Coordinator signing", "envelope_sign_mean_s", C_SIGN),
+        ("Envelope verify", "envelope_verify_mean_s", C_VERIFY),
+        ("Hashing", "hash_mean_s", C_HASH),
+        ("Hash verify", "hash_verify_mean_s", C_HASH_VERIFY),
+        ("Report gen", "report_mean_s", C_REPORT),
+    ]
+
+    ymax = all_rows["pipeline_total_mean_s"].max() * 1.10
+
+    # Pre-build legend handles so we don't miss components that are zero in the first panel
+    legend_handles = [Patch(facecolor=color, label=label) for label, _, color in parts]
+
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
+    axes = axes.flatten()
+
+    for idx, (model, mode) in enumerate(order):
+        ax = axes[idx]
+        row = all_rows[(all_rows["model"] == model) & (all_rows["mode"] == mode)]
+        if row.empty:
+            ax.axis("off")
+            continue
+        r = row.iloc[0]
+        bottom = 0.0
+        for label, col, color in parts:
+            height = float(r[col])
+            if height <= 0:
+                continue
+            ax.bar(0.0, height, bottom=bottom, width=0.6, color=color)
+            bottom += height
+
+        ax.set_title(f"{model} — {mode}")
+        ax.set_xticks([0.0], [f"{model}\n{mode}"])
+        ax.grid(axis="y", linestyle="--", alpha=0.4)
+        ax.set_ylim(0, ymax)
+
+    fig.legend(handles=legend_handles, loc="upper center", ncol=4, frameon=True, bbox_to_anchor=(0.5, 1.00))
+    fig.suptitle("Subcomponent breakdown (mean) — shared Y-axis", y=1.05)
+    plt.tight_layout(rect=[0, 0, 1, 0.98])
+    out_path = fig_dir / "combined_breakdown_grid.png"
+    plt.savefig(out_path, dpi=200)
+    plt.close()
+    print(f"Wrote combined grid: {out_path}")
+
+
+plot_grid(agg)
