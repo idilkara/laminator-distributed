@@ -43,7 +43,6 @@ def train(cfg: CoordinatorConfig):
     coord_pub_path = os.path.join(os.path.dirname(cfg.PRIVATE_KEY_PATH), "coordinator_public.pem")
 
     poller = zmq.Poller()
-    poller.register(task_out, zmq.POLLIN)
     poller.register(results_in, zmq.POLLIN)
 
     timeout_seconds = 15
@@ -53,37 +52,38 @@ def train(cfg: CoordinatorConfig):
 
     print("Coordinator: waiting for handshake responses...", flush=True)
     while (pending_hellos or awaiting_responses) and (time.time() - loop_start) < timeout_seconds:
-        events = dict(poller.poll(1000))
-
-        if task_out in events:
-            ident, msg_bytes = task_out.recv_multipart()
+        # Check for HELLOs from workers (ROUTER socket)
+        try:
+            ident, msg_bytes = task_out.recv_multipart(zmq.NOBLOCK)
             try:
                 msg = json.loads(msg_bytes.decode())
             except Exception:
                 msg = None
 
-            if not isinstance(msg, dict):
-                continue
+            if isinstance(msg, dict):
+                wid = str(msg.get("wid"))
+                if msg.get("type") == "hello" and wid in pending_hellos:
+                    print(f"Coordinator: got HELLO from worker {wid}", flush=True)
+                    session_id = f"sess-{wid}-{int(time.time())}"
+                    offer = create_handshake_offer(
+                        session_id,
+                        cfg.PRIVATE_KEY_PATH,
+                        coordinator_public_key_file=coord_pub_path,
+                    )
+                    pending_offers[wid] = offer
+                    env = {"wid": wid, "handshake": offer}
+                    task_out.send_multipart([
+                        ident,
+                        json.dumps(env, separators=(",", ":"), sort_keys=True).encode(),
+                    ])
+                    awaiting_responses.add(wid)
+                    pending_hellos.discard(wid)
+                    print(f"Coordinator: sent handshake offer to worker {wid}", flush=True)
+        except zmq.Again:
+            pass
 
-            wid = str(msg.get("wid"))
-            if msg.get("type") == "hello" and wid in pending_hellos:
-                print(f"Coordinator: got HELLO from worker {wid}", flush=True)
-                session_id = f"sess-{wid}-{int(time.time())}"
-                offer = create_handshake_offer(
-                    session_id,
-                    cfg.PRIVATE_KEY_PATH,
-                    coordinator_public_key_file=coord_pub_path,
-                )
-                pending_offers[wid] = offer
-                env = {"wid": wid, "handshake": offer}
-                task_out.send_multipart([
-                    ident,
-                    json.dumps(env, separators=(",", ":"), sort_keys=True).encode(),
-                ])
-                awaiting_responses.add(wid)
-                pending_hellos.discard(wid)
-                print(f"Coordinator: sent handshake offer to worker {wid}", flush=True)
-
+        # Check for handshake responses from workers (PULL socket)
+        events = dict(poller.poll(100))
         if results_in in events:
             try:
                 resp_env = results_in.recv_json()
@@ -127,7 +127,6 @@ def train(cfg: CoordinatorConfig):
         still_pending = sorted(list(pending_hellos.union(awaiting_responses)), key=int)
         print(f"Coordinator: handshake timed out for workers {still_pending}", flush=True)
 
-    # handshake end/time
     handshake_end = time.time()
     handshake_time = handshake_end - handshake_start
     print(f"Coordinator: handshake phase completed in {handshake_time:.3f}s", flush=True)
@@ -213,6 +212,12 @@ def train(cfg: CoordinatorConfig):
 
     ########### TRAINING EPOCHS ###########
     training_start = time.time()
+
+    total_hashing_time_per_task = 0.0
+    total_verify_env_time_per_task = 0.0
+    total_verify_hash_time_per_task = 0.0
+    total_signing_time_per_task = 0.0
+
     for epoch in range(cfg.EPOCHS):
         t0 = time.time()
 
@@ -245,6 +250,8 @@ def train(cfg: CoordinatorConfig):
                 "epoch": int(epoch)
             }
 
+
+            hashing_time_for_task_start = time.time()
             # Compute and store stable hashes for this task so we can verify
             # worker responses later.
             H_DTr = _stable_json_hash({"X": payload["X"], "y": payload["y"]})
@@ -258,10 +265,15 @@ def train(cfg: CoordinatorConfig):
                 "H_T": H_T,
             }
 
+            hashing_time_for_task_end = time.time()
+            hashing_time_for_task = hashing_time_for_task_end - hashing_time_for_task_start
+            total_hashing_time_per_task += hashing_time_for_task
+
 
             # initialize per-worker report entry for this epoch
             report[epoch].setdefault(wid_str, {"status": "pending", "notes": []})
 
+            signing_time_for_task_start = time.time()
             # Serialize and sign the payload, include the session nonce in the signed structure
             session_nonce = session_keys.get(wid_str)
             if not session_nonce:
@@ -269,6 +281,10 @@ def train(cfg: CoordinatorConfig):
                 continue
             signed_envelope = sign_envelope(payload, session_nonce, cfg.PRIVATE_KEY_PATH)
             env = {"wid": wid, "payload": signed_envelope}
+            signing_time_for_task_end = time.time()
+            signing_time_for_task = signing_time_for_task_end - signing_time_for_task_start
+            total_signing_time_per_task += signing_time_for_task
+
 
             # Router expects [identity, payload]; send the JSON payload as a
             # single frame. Worker DEALER socket (with identity set) will
@@ -301,6 +317,9 @@ def train(cfg: CoordinatorConfig):
                 continue
 
             # Verify envelope signature and nonce freshness using the established session nonce
+
+            verify_env_time_per_task_start = time.time()
+
             session_nonce = session_keys.get(str(wid))
             if not session_nonce:
                 print(f"Coordinator: no session for worker {wid}; ignoring result", flush=True)
@@ -315,10 +334,18 @@ def train(cfg: CoordinatorConfig):
                 report[epoch][str(wid)]["status"] = "invalid_signature"
                 report[epoch][str(wid)]["notes"].append("envelope signature verification failed or signed by wrong key")
                 continue
+            
+
+
+            verify_env_time_per_task_end = time.time()
+            verify_env_time_per_task = verify_env_time_per_task_end - verify_env_time_per_task_start
+            total_verify_env_time_per_task += verify_env_time_per_task
 
             # Extract worker payload (remove nonce)
             worker_payload = dict(payload_env["message"])
             worker_payload.pop("nonce", None)
+
+            verify_hash_time_for_task_start = time.time()
 
             # Verify that the worker-provided hashes match what we sent.
             expected = expected_hashes.get(str(wid))
@@ -355,6 +382,10 @@ def train(cfg: CoordinatorConfig):
                         report[epoch][str(wid)]["notes"].append(f"{k}: expected {v}, got {received_hashes.get(k)}")
                 continue
 
+
+            verify_hash_time_for_task_end = time.time()
+            verify_hash_time_for_task = verify_hash_time_for_task_end - verify_hash_time_for_task_start
+            total_verify_hash_time_per_task += verify_hash_time_for_task
             # Hashes verified OK — log a concise confirmation and accept result
             print(
                 f"Coordinator: hash verification PASSED for worker {wid} | "
@@ -512,7 +543,11 @@ def train(cfg: CoordinatorConfig):
             report_gen_time = report_gen_end - report_gen_start
 
             print(f"\nTiming summary: handshake={handshake_time:.3f}s | preprocess={preprocess_time:.3f}s | total_training={total_training_time:.3f}s | avg_epoch={avg_epoch:.3f}s | report_generation={report_gen_time:.3f}s",flush=True)
-     
+            print(f"Coordinator: total and average hashing time per task: {total_hashing_time_per_task:.3f},  {total_hashing_time_per_task/( cfg.NUM_WORKERS * cfg.EPOCHS)  } s", flush=True)
+            print(f"Coordinator: total and average envelope verification time per task: {total_verify_env_time_per_task:.3f}, {total_verify_env_time_per_task/( cfg.NUM_WORKERS * cfg.EPOCHS)  } s", flush=True)
+            print(f"Coordinator: total and average hash verification time per task: {total_verify_hash_time_per_task:.3f}, {total_verify_hash_time_per_task/( cfg.NUM_WORKERS * cfg.EPOCHS)  } s", flush=True)
+            print(f"Coordinator: total and average envelope signing time per task: {total_signing_time_per_task:.3f}, {total_signing_time_per_task/( cfg.NUM_WORKERS * cfg.EPOCHS)  } s", flush=True)
+
             print(f"Coordinator: report generation time: {report_gen_time:.3f}s", flush=True)
         except Exception as e:
             print(f"Coordinator: failed to sign/write report signature: {e}", flush=True)

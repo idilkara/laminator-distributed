@@ -68,6 +68,9 @@ def main():
     gradloss_total_time = 0.0
     gradloss_count = 0
 
+    total_time_for_verifying_envelopes = 0.0
+    total_time_for_hashing = 0.0
+    total_time_for_signing_envelopes = 0.0
     # ---- Main loop ----
     while True:
         # Receive and verify the task envelope
@@ -79,6 +82,7 @@ def main():
             print(f"Worker {WorkerConfig.WORKER_ID}: malformed envelope from coordinator", flush=True)
             continue
 
+        t_verify_start = time.time()
         # Verify envelope using stored session nonce
         coord_pub = WorkerConfig.COORDINATOR_PUBLIC_KEY_PATH
         if not session_nonce:
@@ -87,6 +91,9 @@ def main():
         if not verify_envelope(payload_env, session_nonce, coord_pub):
             print(f"Worker {WorkerConfig.WORKER_ID}: envelope verification failed; ignoring", flush=True)
             continue
+
+        t_verify_end = time.time()
+        total_time_for_verifying_envelopes += (t_verify_end - t_verify_start)
 
         # Extract task payload and remove nonce
         task = dict(payload_env["message"]) if isinstance(payload_env["message"], dict) else {}
@@ -105,8 +112,18 @@ def main():
 
         if is_shutdown:
             avg_gradloss = (gradloss_total_time / gradloss_count) if gradloss_count > 0 else 0.0
+            avg_hashing = (total_time_for_hashing / gradloss_count) if gradloss_count > 0 else 0.0
+            avg_signing = (total_time_for_signing_envelopes / gradloss_count) if gradloss_count > 0 else 0.0
+            avg_verifying = (total_time_for_verifying_envelopes / gradloss_count) if gradloss_count > 0 else 0.0
+
+
+
             print(f"Worker {WorkerConfig.WORKER_ID}: handshake time: {handshake_time:.6f}s", flush=True)
             print(f"Worker {WorkerConfig.WORKER_ID}: average gradient loss compute time: {avg_gradloss:.6f}s over {gradloss_count} tasks", flush=True)
+            print(f"Worker {WorkerConfig.WORKER_ID}: average hashing time: {avg_hashing:.6f}s over {gradloss_count} tasks", flush=True)
+            print(f"Worker {WorkerConfig.WORKER_ID}: average envelope signing time: {avg_signing:.6f}s over {gradloss_count} tasks", flush=True)
+            print(f"Worker {WorkerConfig.WORKER_ID}: average envelope verifying time: {avg_verifying:.6f}s over {gradloss_count} tasks", flush=True)
+
             print(f"Worker {WorkerConfig.WORKER_ID}: received SHUTDOWN from coordinator; exiting.", flush=True)
             try:
                 receiver.close(linger=0)
@@ -148,6 +165,8 @@ def main():
                 except Exception:
                     grads_json[k] = str(v)
 
+        t_hash_start = time.time()
+
         # Compute required hashes per spec:
         # H(DTr_i) -> hash of training data (X,y)
         # H(MAr) -> hash of model architecture
@@ -165,6 +184,9 @@ def main():
         H_Me_init = _stable_json_hash(task.get("weights"))
         H_T = _stable_json_hash({"lr": task.get("lr"), "epoch": task.get("epoch")})
   
+        t_hash_end = time.time()
+        total_time_for_hashing += (t_hash_end - t_hash_start)
+
 
         ## CORRECTNESS TEST: WRONG HASH
         # old = H_Me_init
@@ -185,6 +207,7 @@ def main():
                 except Exception:
                     trained_weights_json[k] = str(v)
 
+        
 
         payload = {
             "worker_id": WorkerConfig.WORKER_ID,
@@ -209,7 +232,7 @@ def main():
         #     payload["epoch"] = 99
         #     print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting epoch (was {old_epoch}) -> {payload['epoch']}", flush=True)
 
-
+        t_sign_start = time.time()
         # Sign and send back the result using the established session nonce
         if not session_nonce:
             print(f"Worker {WorkerConfig.WORKER_ID}: no session nonce when sending results; dropping", flush=True)
@@ -222,6 +245,8 @@ def main():
         #     result_envelope["signature"] = "00" * (len(old_sig) // 2)
         #     print(f"Worker {WorkerConfig.WORKER_ID}: intentionally corrupting signature", flush=True)
 
+        t_sign_end = time.time()
+        total_time_for_signing_envelopes += (t_sign_end - t_sign_start)
 
         out_env = {"wid": WorkerConfig.WORKER_ID, "payload": result_envelope}
         sender.send_json(out_env)
