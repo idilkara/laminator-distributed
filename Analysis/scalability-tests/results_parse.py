@@ -16,7 +16,7 @@ from pathlib import Path
 from collections import defaultdict
 import pandas as pd
 
-LOG_PATH = Path("/home/gavin/laminator-distributed/Analysis/CENSUS-S Scalability Tests.txt")  # adjust if needed
+LOG_PATH = Path("CENSUS-S Scalability Tests.txt")  # adjust if needed
 
 # ---------- Regexes ----------
 SEC_HDR = re.compile(
@@ -200,7 +200,7 @@ summary.to_csv("census_s_scalability_summary.csv", index=False)
 agg.to_csv("census_s_scalability_agg.csv", index=False)
 df.to_csv("census_s_scalability_per_run.csv", index=False)
 
-with open("census_s_scalability_summary.json","w") as f:
+with open("census_s_scalability_summary.json", "w") as f:
     json.dump(summary.to_dict(orient="records"), f, indent=2)
 
 print("\nWrote: census_s_scalability_[per_run|agg|summary].csv and census_s_scalability_summary.json")
