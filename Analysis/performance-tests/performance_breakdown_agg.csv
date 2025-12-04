@@ -1,0 +1,5 @@
+model,mode,runs,handshake_mean_s,preprocess_mean_s,gradient_mean_s,crypto_mean_s,hash_mean_s,envelope_verify_mean_s,hash_verify_mean_s,envelope_sign_mean_s,report_mean_s,pipeline_total_mean_s
+CENSUS-L,attested,5,0.24459999999999998,0.2974,15.575399999999998,14.1814,3.3584000000000005,6.4388000000000005,0.0,4.3842,0.3816,30.6804
+CENSUS-L,baseline,5,0.1532,0.27680000000000005,11.521199999999999,0.0,0.0,0.0,0.0,0.0,0.0,11.9512
+CENSUS-S,attested,5,0.25179999999999997,0.29,3.558,2.5738,0.8378,0.2632,0.0,1.4727999999999999,0.0342,6.707800000000001
+CENSUS-S,baseline,5,0.1542,0.31779999999999997,2.5814,0.0,0.0,0.0,0.0,0.0,0.0,3.0534
