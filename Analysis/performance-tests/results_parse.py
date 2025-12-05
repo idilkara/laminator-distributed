@@ -213,12 +213,16 @@ def plot_grid(all_rows: pd.DataFrame):
         ("Report gen", "report_mean_s", C_REPORT),
     ]
 
-    ymax = all_rows["pipeline_total_mean_s"].max() * 1.10
+    # Per-model Y scaling so CENSUS-S bars remain readable
+    model_ymax = {
+        model: all_rows[all_rows["model"] == model]["pipeline_total_mean_s"].max() * 1.15
+        for model in all_rows["model"].unique()
+    }
 
     # Pre-build legend handles so we don't miss components that are zero in the first panel
     legend_handles = [Patch(facecolor=color, label=label) for label, _, color in parts]
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=False)
     axes = axes.flatten()
 
     for idx, (model, mode) in enumerate(order):
@@ -239,7 +243,9 @@ def plot_grid(all_rows: pd.DataFrame):
         ax.set_title(f"{model} — {mode}")
         ax.set_xticks([0.0], [f"{model}\n{mode}"])
         ax.grid(axis="y", linestyle="--", alpha=0.4)
-        ax.set_ylim(0, ymax)
+        ax.set_ylim(0, model_ymax.get(model, all_rows["pipeline_total_mean_s"].max() * 1.15))
+        if idx % 2 == 0:  # left column
+            ax.set_ylabel("Time (s)")
 
     fig.legend(handles=legend_handles, loc="upper center", ncol=4, frameon=True, bbox_to_anchor=(0.5, 1.00))
     fig.suptitle("Subcomponent breakdown (mean) — shared Y-axis", y=1.05)
