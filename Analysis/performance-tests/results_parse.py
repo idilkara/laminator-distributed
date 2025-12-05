@@ -182,6 +182,7 @@ def plot_bar(model, mode, subset):
     plt.title(f"{model} ({mode}) — subcomponent breakdown")
     plt.grid(axis="y", linestyle="--", alpha=0.4)
     plt.legend(handles=handles, loc="upper left", frameon=True)
+
     plt.tight_layout()
     out_path = fig_dir / f"{model.lower()}_{mode}_breakdown.png"
     plt.savefig(out_path, dpi=200)
@@ -250,6 +251,37 @@ def plot_grid(all_rows: pd.DataFrame):
     fig.legend(handles=legend_handles, loc="upper center", ncol=4, frameon=True, bbox_to_anchor=(0.5, 1.00))
     fig.suptitle("Subcomponent breakdown (mean) — shared Y-axis", y=1.05)
     plt.tight_layout(rect=[0, 0, 1, 0.98])
+    # Overhead stickers between baseline/attested pairs (CENSUS-S row and CENSUS-L row)
+    def overhead_text(model_name):
+        base_row = all_rows[(all_rows["model"] == model_name) & (all_rows["mode"] == "baseline")]
+        att_row = all_rows[(all_rows["model"] == model_name) & (all_rows["mode"] == "attested")]
+        if base_row.empty or att_row.empty:
+            return None
+        b = float(base_row.iloc[0]["pipeline_total_mean_s"])
+        a = float(att_row.iloc[0]["pipeline_total_mean_s"])
+        if b <= 0:
+            return None
+        return f"Overhead: +{(a-b):.2f}s (+{(100*(a-b)/b):.1f}%)"
+
+    stickers = {
+        "CENSUS-S": overhead_text("CENSUS-S"),
+        "CENSUS-L": overhead_text("CENSUS-L"),
+    }
+    # Place stickers roughly between baseline/attested columns for each row (y coords tuned for 2 rows)
+    if stickers.get("CENSUS-S"):
+        fig.text(
+            0.5, 0.72, stickers["CENSUS-S"],
+            ha="center", va="center",
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="black", alpha=0.9),
+            fontsize=12,
+        )
+    if stickers.get("CENSUS-L"):
+        fig.text(
+            0.5, 0.22, stickers["CENSUS-L"],
+            ha="center", va="center",
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="black", alpha=0.9),
+            fontsize=12,
+        )
     out_path = fig_dir / "combined_breakdown_grid.png"
     plt.savefig(out_path, dpi=200)
     plt.close()

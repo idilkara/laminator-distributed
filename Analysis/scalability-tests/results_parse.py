@@ -255,12 +255,8 @@ for (e, w) in pairs:
         # skip incomplete pairs
         continue
 
-    # Component means
-    b_hs, b_pre, b_train = b["handshake_mean"], b["preprocess_mean"], b["training_mean"]
-    a_hs, a_pre, a_train, a_rep = a["handshake_mean"], a["preprocess_mean"], a["training_mean"], a["report_mean"]
-
-    # Totals & 1σ (baseline uses baseline_like_total)
-    b_total, b_std = b["baseline_like_total_mean"], b["baseline_like_total_std"]
+    # Use full pipeline totals (already include handshake, preprocess, training, report where present)
+    b_total, b_std = b["total_mean"], b["total_std"]
     a_total, a_std = a["total_mean"], a["total_std"]
 
     # X positions: left=baseline, right=attested
@@ -268,20 +264,13 @@ for (e, w) in pairs:
 
     fig, ax = plt.subplots(figsize=(9, 6))
 
-    # --- Baseline stacked bar (handshake + preprocess + training) ---
-    b1 = ax.bar(x_baseline, b_hs, width=0.6, color=C_HS, label="Handshake (baseline)")
-    b2 = ax.bar(x_baseline, b_pre, width=0.6, bottom=b_hs, color=C_PRE, label="Preprocess (baseline)")
-    b3 = ax.bar(x_baseline, b_train, width=0.6, bottom=b_hs + b_pre, color=C_TRAIN, label="Training (baseline)")
+    # --- Baseline bar (total pipeline) ---
+    b_bar = ax.bar(x_baseline, b_total, width=0.6, color=C_TRAIN, label="Training (base)")
     # Error bar on total height
     ax.errorbar([x_baseline], [b_total], yerr=[b_std], fmt="none", capsize=6, elinewidth=2, ecolor="black")
 
-    # --- Attested stacked bar (handshake + preprocess + training + report) ---
-    a_stack1 = ax.bar(x_attest, a_hs, width=0.6, color=C_HS, label="Handshake")
-    a_stack2 = ax.bar(x_attest, a_pre, width=0.6, bottom=a_hs, color=C_PRE,
-                      hatch="//", edgecolor="black", label="Preprocess (attested)")
-    a_stack3 = ax.bar(x_attest, a_train, width=0.6, bottom=a_hs + a_pre, color=C_TRAIN,
-                      hatch="\\\\", edgecolor="black", label="Training (attested)")
-    a_stack4 = ax.bar(x_attest, a_rep, width=0.6, bottom=a_hs + a_pre + a_train, color=C_REP, label="Report gen")
+    # --- Attested bar (total pipeline) ---
+    a_bar = ax.bar(x_attest, a_total, width=0.6, color=C_PRE, hatch="\\\\", edgecolor="black", label="Training (attested)")
     # Error bar on total height
     ax.errorbar([x_attest], [a_total], yerr=[a_std], fmt="none", capsize=6, elinewidth=2, ecolor="black")
 
@@ -298,12 +287,8 @@ for (e, w) in pairs:
 
     # Legend (clean + non-duplicative)
     legend_handles = [
-        Patch(facecolor=C_HS, label="Handshake"),
-        Patch(facecolor=C_PRE, label="Preprocess (baseline)"),
-        Patch(facecolor=C_PRE, hatch="//", edgecolor="black", label="Preprocess (attested)"),
-        Patch(facecolor=C_TRAIN, label="Training (baseline)"),
-        Patch(facecolor=C_TRAIN, hatch="\\\\", edgecolor="black", label="Training (attested)"),
-        Patch(facecolor=C_REP, label="Report gen"),
+        Patch(facecolor=C_TRAIN, label="Training (base)"),
+        Patch(facecolor=C_PRE, hatch="\\\\", edgecolor="black", label="Training (attested)"),
     ]
     ax.legend(handles=legend_handles, loc="upper left", frameon=True)
 
@@ -330,3 +315,73 @@ for (e, w) in pairs:
     plt.close()
 
 print("Wrote per-config figures to: ./figs/ (e.g., figs/census_s_10e_2w.png)")
+
+
+def plot_combined_grid():
+    """3x3 grid: rows=epochs, cols=workers; each cell shows baseline vs attested stacked bars."""
+    uniq_epochs = sorted({int(x) for x in agg["epochs"].unique()})
+    uniq_workers = sorted({int(x) for x in agg["workers"].unique()})
+
+    # Slightly more compact vertical space
+    fig, axes = plt.subplots(len(uniq_epochs), len(uniq_workers), figsize=(4 * len(uniq_workers), 3.3 * len(uniq_epochs)), sharey=True)
+    if len(uniq_epochs) == 1 and len(uniq_workers) == 1:
+        axes = np.array([[axes]])
+    elif len(uniq_epochs) == 1 or len(uniq_workers) == 1:
+        axes = np.array(axes).reshape(len(uniq_epochs), len(uniq_workers))
+
+    # Compute a common ymax
+    ymax = agg["total_pipeline_mean_s"].max() * 1.10
+
+    for i, e in enumerate(uniq_epochs):
+        for j, w in enumerate(uniq_workers):
+            ax = axes[i][j]
+            b = get_group_mean_std(e, w, "baseline")
+            a = get_group_mean_std(e, w, "attested")
+            if b is None or a is None:
+                ax.axis("off")
+                continue
+
+            b_total, b_std = b["total_mean"], b["total_std"]
+            a_total, a_std = a["total_mean"], a["total_std"]
+
+            x_baseline, x_attest = -0.15, 0.15
+
+            ax.bar(x_baseline, b_total, width=0.25, color=C_TRAIN)
+            ax.errorbar([x_baseline], [b_total], yerr=[b_std], fmt="none", capsize=4, elinewidth=1.5, ecolor="black")
+
+            ax.bar(x_attest, a_total, width=0.25, color=C_PRE, hatch="\\\\", edgecolor="black")
+            ax.errorbar([x_attest], [a_total], yerr=[a_std], fmt="none", capsize=4, elinewidth=1.5, ecolor="black")
+
+            ax.set_title(f"{e}e, {w}w", fontsize=10)
+            ax.set_xticks([x_baseline, x_attest], ["Base", "Att"])
+            ax.set_ylim(0, ymax)
+            ax.grid(axis="y", linestyle="--", alpha=0.35)
+            if j == 0:
+                ax.set_ylabel("Time (s)")
+
+            # Add overhead sticker using summary_lut if available
+            oh = summary_lut.get((e, w))
+            if oh:
+                sticker = f"+{oh['overhead_abs']:.1f}s (+{oh['overhead_pct']:.0f}%)"
+                ax.text(
+                    0.5, 0.85, sticker,
+                    transform=ax.transAxes,
+                    ha="center", va="center",
+                    bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="black", alpha=0.85),
+                    fontsize=9
+                )
+
+    legend_handles = [
+        Patch(facecolor=C_TRAIN, label="Training (base)"),
+        Patch(facecolor=C_PRE, hatch="\\\\", edgecolor="black", label="Training (attested)"),
+    ]
+    fig.legend(handles=legend_handles, loc="upper center", ncol=2, frameon=True, bbox_to_anchor=(0.5, 0.96))
+    fig.suptitle("CENSUS-S scalability: baseline vs attested (shared Y-axis)", y=0.98)
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    out_path = "figs/census_s_scalability_combined_grid.png"
+    plt.savefig(out_path, dpi=200)
+    plt.close()
+    print(f"Wrote combined grid: {out_path}")
+
+
+plot_combined_grid()
