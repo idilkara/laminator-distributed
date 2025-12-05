@@ -1,40 +1,40 @@
 1. CENSUS-S, 10 epochs, 2 workers
 Scalability test
 Baseline (CENSUS-S, 10 epochs, 2 workers)
-===== RUN 1 (2025-11-22 13:52:42) =====
-container "6c75ad2a0b489c225c70f4ef0aae3e0b3ab77b5ea3725447b4555fd80293a6e2" exited with status code 0
+===== RUN 1 (2025-12-05 08:36:03) =====
+container "97450e6c15f5cd01df4050644c6f7f9018c8ead8bf44db2dd69094e10cab8ef9" exited with status code 0
 
 
-Timing summary: preprocess=0.289s | total_training=2.471s | avg_epoch=0.247s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.039s | preprocess=0.337s | total_training=2.526s | avg_epoch=0.253s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 13:52:53) =====
-container "b34527bfa566245737481fec6a22eb917035664cd1eefa2ea986a4f4f93b7702" exited with status code 0
-
-
-Timing summary: preprocess=0.269s | total_training=2.440s | avg_epoch=0.244s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 13:53:01) =====
-container "f4793eeb807f7b6311ec7acbb73878194a2bff2b573a800194079abfa5fe9890" exited with status code 0
+===== RUN 2 (2025-12-05 08:36:13) =====
+container "b943587a70118c2c759fc464991982a3edfa1cbb36b7d6a2df2f6721adc7b10a" exited with status code 0
 
 
-Timing summary: preprocess=0.277s | total_training=2.447s | avg_epoch=0.245s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.187s | preprocess=0.282s | total_training=2.500s | avg_epoch=0.250s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 13:53:08) =====
-container "95fee8a89b696f13b6606677366b954163eeda9886190e826f273bb9909d3ed6" exited with status code 0
-
-
-Timing summary: preprocess=0.276s | total_training=2.526s | avg_epoch=0.253s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 13:53:15) =====
-container "343847cbf2c4ed67e3f831a39cf7179ca7c3f97c8e207fa459bad825cab846de" exited with status code 0
+===== RUN 3 (2025-12-05 08:36:21) =====
+container "176c5493ffb5ed02bf595668357fb5dac58106949d59a6f3fb4bc7ee64d225ef" exited with status code 0
 
 
-Timing summary: preprocess=0.285s | total_training=2.492s | avg_epoch=0.249s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.149s | preprocess=0.273s | total_training=2.475s | avg_epoch=0.247s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 08:36:29) =====
+container "c40ba8cca9428acd7779b932ecb9fb264267e1b2b0c39349b23bee8041457261" exited with status code 0
+
+
+Timing summary: handshake=0.195s | preprocess=0.280s | total_training=2.500s | avg_epoch=0.250s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 08:36:36) =====
+container "6947841eb222db5aa5fc1c557b4a2566a42e126529dcde04f0217b7d2ae82677" exited with status code 0
+
+
+Timing summary: handshake=0.175s | preprocess=0.276s | total_training=2.506s | avg_epoch=0.251s
+Coordinator: sent SHUTDOWN to all workers
 
 With Attestation (CENSUS-S, 10 epochs, 2 workers)
 ===== RUN 1 (2025-11-22 14:00:51) =====
@@ -219,40 +219,40 @@ hash_report.txt size (bytes): 268746
 2. CENSUS-S, 10 epochs, 4 workers
 Scalability test
 Baseline (CENSUS-S, 10 epochs, 4 workers)
-===== RUN 1 (2025-11-22 14:16:15) =====
-container "726684cf59f8953f38dd253aeab2f9bf4970247d0c885a3e975a165a50ff41e8" exited with status code 0
+===== RUN 1 (2025-12-05 08:42:19) =====
+container "894b0241714409abf3f186d4f7e7997fe00d7228705c7efcf9bec5bb729b5d16" exited with status code 0
 
 
-Timing summary: preprocess=0.270s | total_training=2.071s | avg_epoch=0.207s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.171s | preprocess=0.369s | total_training=2.315s | avg_epoch=0.232s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 14:16:22) =====
-container "5ead9d6cf3a0f5c355dfbda03331a86c70d379876884b814ddfad60e305c0ee0" exited with status code 0
-
-
-Timing summary: preprocess=0.298s | total_training=2.185s | avg_epoch=0.219s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 14:16:30) =====
-container "aef68972a744771e50e40d28cf77985f2c737793d0745f5158114b2e08e3cd59" exited with status code 0
+===== RUN 2 (2025-12-05 08:42:28) =====
+container "026dca731390be3d5073b86a25d471fed6062e6e2c03ccc522533ecde2349f9e" exited with status code 0
 
 
-Timing summary: preprocess=0.307s | total_training=2.187s | avg_epoch=0.219s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.173s | preprocess=0.282s | total_training=2.291s | avg_epoch=0.229s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 14:16:37) =====
-container "5f04e8c95a3653c81eb8ec5234f53fef3af301a9a418a61927e71d190fd2827a" exited with status code 0
-
-
-Timing summary: preprocess=0.293s | total_training=2.163s | avg_epoch=0.216s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 14:16:44) =====
-container "2bde354cc1e35880629436b02bf042d0ab28affdf1fbb0ac4d5f776f014d040b" exited with status code 0
+===== RUN 3 (2025-12-05 08:42:36) =====
+container "1f9fb9641c2717491b5cddf63c480d869830c9a6f30f47f66453ef2cd2afa033" exited with status code 0
 
 
-Timing summary: preprocess=0.320s | total_training=2.448s | avg_epoch=0.245s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.193s | preprocess=0.302s | total_training=2.967s | avg_epoch=0.297s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 08:42:45) =====
+container "8680afe798e3f87484f3613ea863f31d725aadd35a38819676ae9d1f433450aa" exited with status code 0
+
+
+Timing summary: handshake=0.178s | preprocess=0.289s | total_training=2.144s | avg_epoch=0.214s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 08:42:53) =====
+container "316d47a0c2d1a5901a2d1511f64bfb412fcc55a202c1f0c452e9b48216db5664" exited with status code 0
+
+
+Timing summary: handshake=0.167s | preprocess=0.495s | total_training=2.253s | avg_epoch=0.225s
+Coordinator: sent SHUTDOWN to all workers
 
 With Attestation (CENSUS-S, 10 epochs, 4 workers)
 ===== RUN 1 (2025-11-22 14:19:06) =====
@@ -438,40 +438,40 @@ hash_report.txt size (bytes): 269059
 3. CENSUS-S, 10 epochs, 8 workers
 Scalability test
 Baseline (CENSUS-S, 10 epochs, 8 workers)
-===== RUN 1 (2025-11-22 14:25:09) =====
-container "441166783e2d41201fb0fecd60f0b39235149c519b58f2bf508c8a5c0817ad9b" exited with status code 0
+===== RUN 1 (2025-12-05 08:43:48) =====
+container "e0ded3a07f4ae09a1c0738c9a5a6c7307ba461a00ed163760a08305473a04dac" exited with status code 0
 
 
-Timing summary: preprocess=0.305s | total_training=2.365s | avg_epoch=0.236s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.133s | preprocess=0.320s | total_training=3.284s | avg_epoch=0.328s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 14:25:18) =====
-container "fbaa95ced5f4e45289bc7c3d36f2ec3992dbc3bab6bd026037bbf3dedd87d608" exited with status code 0
-
-
-Timing summary: preprocess=0.318s | total_training=2.360s | avg_epoch=0.236s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 14:25:28) =====
-container "c4c759746429bf51ba716f50c05650f5c7d850f9ad612a73df160a3cfe96441f" exited with status code 0
+===== RUN 2 (2025-12-05 08:43:59) =====
+container "8834f9f88040723d1503288e48601008e3146297a581dbb20d78f376cacb766c" exited with status code 0
 
 
-Timing summary: preprocess=0.320s | total_training=2.416s | avg_epoch=0.242s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.176s | preprocess=0.293s | total_training=2.321s | avg_epoch=0.232s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 14:25:37) =====
-container "6bff74cf15b320aaa24f67617e56fea82f1f3388ddb9666d2904050068858035" exited with status code 0
-
-
-Timing summary: preprocess=0.292s | total_training=2.420s | avg_epoch=0.242s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 14:25:47) =====
-container "db8b12d571b6c7aaf5562d7a0ba6cbcde026594a04c3e99b281806a4861d1b3e" exited with status code 0
+===== RUN 3 (2025-12-05 08:44:10) =====
+container "be3b69740451c38f533a6ceadf43a334ba674076a6181e468ccd2fee1264ca4b" exited with status code 0
 
 
-Timing summary: preprocess=0.293s | total_training=2.475s | avg_epoch=0.248s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.129s | preprocess=0.302s | total_training=3.011s | avg_epoch=0.301s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 08:44:22) =====
+container "7aaafe123fb00d21b70e4bc762e93288420f53ada2bbeb1c07b33446de917560" exited with status code 0
+
+
+Timing summary: handshake=0.182s | preprocess=0.300s | total_training=3.051s | avg_epoch=0.305s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 08:44:33) =====
+container "ef593ec1c2f01664920b313c3ad6bdd1add74a0968d8ba7fa9b8cdc298607a76" exited with status code 0
+
+
+Timing summary: handshake=0.175s | preprocess=0.366s | total_training=2.943s | avg_epoch=0.294s
+Coordinator: sent SHUTDOWN to all workers
 
 
 With Attestation (CENSUS-S, 10 epochs, 8 workers)
@@ -663,40 +663,42 @@ hash_report.txt size (bytes): 269635
 4. CENSUS-S, 50 epochs, 2 workers
 Scalability test
 Baseline (CENSUS-S, 50 epochs, 2 workers)
-===== RUN 1 (2025-11-30 11:55:35) =====
-container "bb194c9538117693a66d5c7826ff87c38a40968f24634ca7d17a2acab8b6a3a5" exited with status code 0
+===== RUN 1 (2025-12-05 10:26:31) =====
+container "e95cd72a3a5267be0ff56454e969e204cdab51319d4f1bf55d237b7fc5d8515d" exited with status code 0
 
 
-Timing summary: preprocess=0.279s | total_training=11.959s | avg_epoch=0.239s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.026s | preprocess=0.592s | total_training=12.159s | avg_epoch=0.243s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-30 11:55:52) =====
-container "8efe4e24ac7ce1a8fc525fc8c49808fdee1b90a9b3e47239fd8fe13eec02c536" exited with status code 0
-
-
-Timing summary: preprocess=0.287s | total_training=12.314s | avg_epoch=0.246s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-30 11:56:09) =====
-container "30d228a9b5b8da6f4df5870d86de034ad00a18d913c363fd68aa6ac155c9459b" exited with status code 0
+===== RUN 2 (2025-12-05 10:26:52) =====
+container "62305469aff72a589e1147a33f3563ed7e605ecb17648825bfd8a1922944104e" exited with status code 0
 
 
-Timing summary: preprocess=0.281s | total_training=11.968s | avg_epoch=0.239s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.150s | preprocess=0.365s | total_training=12.178s | avg_epoch=0.244s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-30 11:56:26) =====
-container "d605c512f0f21ac88211a12d18ddc2fb28c1b6c5b23bcbad2f74cf5f8b4ddebf" exited with status code 0
-
-
-Timing summary: preprocess=0.277s | total_training=11.850s | avg_epoch=0.237s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-30 11:56:42) =====
-container "b17a70625f569f63191d75719dc8145ede23a4fb2fb0996f0519888484dff7f4" exited with status code 0
+===== RUN 3 (2025-12-05 10:27:09) =====
+container "aeb2ba9827f12f441e40a3859c4586e215ad4935c4036fef41469ba4c7cec828" exited with status code 0
 
 
-Timing summary: preprocess=0.275s | total_training=12.016s | avg_epoch=0.240s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.111s | preprocess=0.325s | total_training=12.461s | avg_epoch=0.249s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:27:27) =====
+container "ef04a036babfab5a95a9ee32c7a51f9532f93b022209e31589137630008e5c58" exited with status code 0
+
+
+Timing summary: handshake=0.189s | preprocess=0.269s | total_training=11.814s | avg_epoch=0.236s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:27:43) =====
+container "3baca8a869a3b4c69584efd876864331795fb16b561e77a31ddcefd72d6737a7" exited with status code 0
+
+
+Timing summary: handshake=0.174s | preprocess=0.275s | total_training=12.015s | avg_epoch=0.240s
+Coordinator: sent SHUTDOWN to all workers
+
+
 
 
 
@@ -884,40 +886,42 @@ hash_report.txt size (bytes): 270555
 5. CENSUS-S, 50 epochs, 4 workers
 Scalability test
 Baseline (CENSUS-S, 50 epochs, 4 workers)
-===== RUN 1 (2025-11-22 14:51:37) =====
-container "a891113e34131a42dd88a3adae39ef5cabbdc669316377820370a496bd2b8c6b" exited with status code 0
+===== RUN 1 (2025-12-05 10:30:04) =====
+container "b2d21269305c258c98028f0a54b3795c15ab3815639d89f2d9bd855f58520f18" exited with status code 0
 
 
-Timing summary: preprocess=0.273s | total_training=10.624s | avg_epoch=0.212s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.187s | preprocess=0.275s | total_training=10.269s | avg_epoch=0.205s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 14:51:54) =====
-container "91b7ef4e659bdbac0424eca53410e51cc8230f38c6f8b762819d5502bb14bed7" exited with status code 0
-
-
-Timing summary: preprocess=0.283s | total_training=10.607s | avg_epoch=0.212s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 14:52:10) =====
-container "d3df553a1abe37c66a4bce42f9eef70fcdfa92264d40f6cec397085725efea20" exited with status code 0
+===== RUN 2 (2025-12-05 10:30:20) =====
+container "3a4b559cc31dbdd4c698376ebe0c6e83de022f17b87b76fa5263c6f6c0d6a0ff" exited with status code 0
 
 
-Timing summary: preprocess=0.305s | total_training=10.378s | avg_epoch=0.208s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.130s | preprocess=0.309s | total_training=11.629s | avg_epoch=0.233s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 14:52:26) =====
-container "130a3d70b27e5377bc3439ce7bc8d1dadeb9e26d1ae408929d5fc9640c21d27b" exited with status code 0
-
-
-Timing summary: preprocess=0.294s | total_training=10.804s | avg_epoch=0.216s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 14:52:42) =====
-container "be4bd51e2365147c52223cd3bfc0c08a9808fda98a29644faf41104c51a99b8f" exited with status code 0
+===== RUN 3 (2025-12-05 10:30:38) =====
+container "ba11c28df69b6b6f1b7c932ae8cc6b9ff7713937bb66308abb1ff745c1a8c720" exited with status code 0
 
 
-Timing summary: preprocess=0.285s | total_training=11.041s | avg_epoch=0.221s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.161s | preprocess=0.305s | total_training=12.033s | avg_epoch=0.241s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:30:56) =====
+container "154e851057e4ee955f048f4f11bcae61df5b3d761fef9c73c2c7088c0e239296" exited with status code 0
+
+
+Timing summary: handshake=0.188s | preprocess=0.498s | total_training=10.560s | avg_epoch=0.211s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:31:13) =====
+container "3d805209e4039a9aca1faab86df56d6626c82f8a86f4f8f04603c673944e222b" exited with status code 0
+
+
+Timing summary: handshake=0.185s | preprocess=0.287s | total_training=10.374s | avg_epoch=0.207s
+Coordinator: sent SHUTDOWN to all workers
+
+
 
 With Attestation (CENSUS-S, 50 epochs, 4 workers)
 ===== RUN 1 (2025-11-22 14:54:27) =====
@@ -1096,46 +1100,47 @@ timing summary: total=0.526s, read_and_verify=0.016s, parse_report=0.000s, recom
 summary of timing and results: signature_ok=True hashes_ok=True epochs_ok=True overall_ok=True
 For all runs:
 hash_report.txt size (bytes): 272065
- hash_report.txt.sig size (bytes): 606 
+ hash_report.txt.sig size (bytes): 606
  final_weights.json size (bytes): 255635
 
 6. CENSUS-S, 50 epochs, 8 workers
 Scalability test
 Baseline (CENSUS-S, 50 epochs, 8 workers)
-===== RUN 1 (2025-11-22 15:41:55) =====
-container "fbeb4b0ef54e08030a7c7ed9d6f5fff5d4aa65a07b153ebb2789ff9f83e364b8" exited with status code 0
+===== RUN 1 (2025-12-05 10:32:43) =====
+container "7d8d832f9c7176e4cf3089c6d6941cceca1fd141aff77ed6e084a3ac7dcc6c8d" exited with status code 0
 
 
-Timing summary: preprocess=0.314s | total_training=12.032s | avg_epoch=0.241s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.179s | preprocess=0.277s | total_training=12.213s | avg_epoch=0.244s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 15:42:15) =====
-container "466f0f366d4f949f0868fd2d64917394df0cbd496a74efc29ade60ef0f37c219" exited with status code 0
-
-
-Timing summary: preprocess=0.298s | total_training=12.039s | avg_epoch=0.241s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 15:42:34) =====
-container "8375f54b3cbfcd56175674b4d6a2c8dd1db9c7069c14111bd736a5e6eb12cb7c" exited with status code 0
+===== RUN 2 (2025-12-05 10:33:03) =====
+container "c43558e0c58b431b41510d766ef0ca5bbe0ae2e24aea3a8f649e7c0e6b149f33" exited with status code 0
 
 
-Timing summary: preprocess=0.322s | total_training=11.468s | avg_epoch=0.229s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.198s | preprocess=0.281s | total_training=11.981s | avg_epoch=0.240s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 15:42:54) =====
-container "25d8efe527cd7d764d4bd1a69ed8c0efcd671bc7bb256baac85857a87ddbf7f0" exited with status code 0
-
-
-Timing summary: preprocess=0.309s | total_training=11.543s | avg_epoch=0.231s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 15:43:12) =====
-container "3d55a8183065e071899412f2da4e4ba052484208b3b10cc4eae9301fc7a8afae" exited with status code 0
+===== RUN 3 (2025-12-05 10:33:22) =====
+container "96ecd7d6d5c0ae46c0c6b91fe829f9ad5811e8ece289a1c1a0e4b9f68edfb86f" exited with status code 0
 
 
-Timing summary: preprocess=0.294s | total_training=11.286s | avg_epoch=0.226s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.183s | preprocess=0.280s | total_training=11.426s | avg_epoch=0.229s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:33:42) =====
+container "5a1b65146663d8bd3a17030f9de4685d70d6435802cc4626ce255c2aeb7c9611" exited with status code 0
+
+
+Timing summary: handshake=0.156s | preprocess=0.288s | total_training=11.572s | avg_epoch=0.231s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:34:00) =====
+container "a44ca6975c520634b000699a9ac825adec6e90036b8b8f12d751322f85505cc5" exited with status code 0
+
+
+Timing summary: handshake=0.174s | preprocess=0.279s | total_training=11.521s | avg_epoch=0.230s
+Coordinator: sent SHUTDOWN to all workers
+
 With Attestation (CENSUS-S, 50 epochs, 8 workers)
 ===== RUN 1 (2025-11-22 15:44:01) =====
 container "e5a2896dbb721722a6746471bbb01e97a5df33085a884b6f7813a0695cd1a017" exited with status code 0
@@ -1317,44 +1322,45 @@ hash_report.txt size (bytes): 275034
  final_weights.json size (bytes): 255604
 
 
-
 7. CENSUS-S, 100 epochs, 2 workers
 Scalability test
 Baseline (CENSUS-S, 100 epochs, 2 workers)
-===== RUN 1 (2025-11-22 15:53:13) =====
-container "ee89df9c1b71d18d7fe44b97929e0b38ade8324e4af450de54dff38dde48cfd7" exited with status code 0
+===== RUN 1 (2025-12-05 10:36:23) =====
+container "6c107ded3e5fd61388af8697398b5cfc160410f25238858bc6a211eb8878483e" exited with status code 0
 
 
-Timing summary: preprocess=0.294s | total_training=23.075s | avg_epoch=0.231s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.126s | preprocess=0.297s | total_training=23.041s | avg_epoch=0.230s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 15:53:41) =====
-container "e3653400d98bf989fb447d7b3cfee69c17d33508e9ef8970ca0a62d781ff3acf" exited with status code 0
-
-
-Timing summary: preprocess=0.274s | total_training=22.775s | avg_epoch=0.228s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 15:54:08) =====
-container "e34e68013b5f336fca361da3dd74e67d11e9d91c013dafc08fd5ad22dcfca3a5" exited with status code 0
+===== RUN 2 (2025-12-05 10:36:52) =====
+container "4a5b655e4852ac6516806ad34cdee9316c84316c2a3a47562d24f59d3c001cdb" exited with status code 0
 
 
-Timing summary: preprocess=0.277s | total_training=22.798s | avg_epoch=0.228s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.172s | preprocess=0.280s | total_training=23.290s | avg_epoch=0.233s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 15:54:36) =====
-container "90a87a9006998e545b3a3098a81aff3f4672b2333427b0e4b6247b5166acd2cb" exited with status code 0
-
-
-Timing summary: preprocess=0.269s | total_training=22.624s | avg_epoch=0.226s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 15:55:03) =====
-container "d0398988d3f04306df082ab89cb4821f28a81f4e6772525ea8fbd3343e114573" exited with status code 0
+===== RUN 3 (2025-12-05 10:37:20) =====
+container "dabfcd643fdc34191fe1708d0d99eb3724ff86faf5cdda5895630b69de362440" exited with status code 0
 
 
-Timing summary: preprocess=0.263s | total_training=22.791s | avg_epoch=0.228s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.200s | preprocess=0.289s | total_training=23.581s | avg_epoch=0.236s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:37:48) =====
+container "cfca4b0a3b14fb2e79128841775e0372b390171d4198be94a2a9af12eff992ca" exited with status code 0
+
+
+Timing summary: handshake=0.132s | preprocess=0.283s | total_training=23.105s | avg_epoch=0.231s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:38:17) =====
+container "8ba3d2e9b5fd9403191264babda32a7f94f89cc873e6b450cde03cd9e6b962a1" exited with status code 0
+
+
+Timing summary: handshake=0.079s | preprocess=0.263s | total_training=23.223s | avg_epoch=0.232s
+Coordinator: sent SHUTDOWN to all workers
+
+
 
 With Attestation (CENSUS-S, 100 epochs, 2 workers)
 ===== RUN 1 (2025-11-22 15:56:50) =====
@@ -1535,40 +1541,41 @@ hash_report.txt size (bytes): 272544
 8. CENSUS-S, 100 epochs, 4 workers
 Scalability test
 Baseline (CENSUS-S, 100 epochs, 4 workers)
-===== RUN 1 (2025-11-22 16:25:43) =====
-container "c6234bea7a39d42d23f459d5ae578b28c6a231d4d3964c013c48d4caea5edfbc" exited with status code 0
+===== RUN 1 (2025-12-05 10:43:04) =====
+container "63c990c2059d386186551fa812b7dd8afe6b660e3b2c7fdb8654dfdfa59865a0" exited with status code 0
 
 
-Timing summary: preprocess=0.306s | total_training=21.559s | avg_epoch=0.216s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.182s | preprocess=0.339s | total_training=21.041s | avg_epoch=0.210s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 16:26:13) =====
-container "6ea93661f5b335642d3d7f53f130b4a77afa1731f4b8a3d938e8a9c28aa445d4" exited with status code 0
-
-
-Timing summary: preprocess=0.284s | total_training=20.356s | avg_epoch=0.204s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 16:26:39) =====
-container "d431e86f375910f038db877af73d73cc9bedcba5b40d2c21f81b56c1a3387ecf" exited with status code 0
+===== RUN 2 (2025-12-05 10:43:31) =====
+container "1a6bacea59163a42b7215eb8e201f8008648a8339f8607f099e36f5b699d97c4" exited with status code 0
 
 
-Timing summary: preprocess=0.277s | total_training=20.067s | avg_epoch=0.201s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.153s | preprocess=0.285s | total_training=20.909s | avg_epoch=0.209s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 16:27:04) =====
-container "9e64d9cd1d10f8ed05f287b34c712c1f4a9a2494d661bc4f0467c99f9b426539" exited with status code 0
-
-
-Timing summary: preprocess=0.268s | total_training=20.261s | avg_epoch=0.203s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 16:27:29) =====
-container "a4c99f0bd29355c0b5da957f3b2c636660f64ddf59e8b224cc59fe8c13f6e3d2" exited with status code 0
+===== RUN 3 (2025-12-05 10:43:58) =====
+container "ae3605866db4cbd7d69258d88e849a3783969ef1392a9ed5e8c91f9e2c2a9d13" exited with status code 0
 
 
-Timing summary: preprocess=0.298s | total_training=19.995s | avg_epoch=0.200s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.172s | preprocess=0.320s | total_training=20.672s | avg_epoch=0.207s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:44:25) =====
+container "e1d468e3488687d4e49f36a4fedde190b07483176961cc471968a90244cd4e37" exited with status code 0
+
+
+Timing summary: handshake=0.155s | preprocess=0.271s | total_training=20.898s | avg_epoch=0.209s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:44:51) =====
+container "90aa783202ab7b6ecb602632b95627a1968815f7009be8944361d04c4ae6049e" exited with status code 0
+
+
+Timing summary: handshake=0.188s | preprocess=0.328s | total_training=20.910s | avg_epoch=0.209s
+Coordinator: sent SHUTDOWN to all workers
+
 
 With Attestation (CENSUS-S, 100 epochs, 4 workers)
 ===== RUN 1 (2025-11-22 16:30:18) =====
@@ -1749,40 +1756,42 @@ hash_report.txt size (bytes): 275525
 9. CENSUS-S, 100 epochs, 8 workers
 Scalability test
 Baseline (CENSUS-S, 100 epochs, 8 workers)
-===== RUN 1 (2025-11-22 16:47:16) =====
-container "35aae5a4966666ad1de38de95cd2fa7615b187d9fc1aa78a88c8f21054204d73" exited with status code 0
+===== RUN 1 (2025-12-05 10:46:55) =====
+container "a575b9c3e1ae802c4591ca12ad629adadc145af9aae1fc8c06699a9f31715421" exited with status code 0
 
 
-Timing summary: preprocess=0.314s | total_training=23.354s | avg_epoch=0.234s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.157s | preprocess=0.287s | total_training=23.936s | avg_epoch=0.239s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 2 (2025-11-22 16:47:47) =====
-container "cd2a12aad63c5234a79732dccf7e3cfb57968d00927ca0a5bd9361944c93d02d" exited with status code 0
-
-
-Timing summary: preprocess=0.313s | total_training=23.096s | avg_epoch=0.231s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 3 (2025-11-22 16:48:17) =====
-container "9bad47414359bf45d9ba7cea7ecb9ba6582ae91e8e5eef03803f2b76f2a49944" exited with status code 0
+===== RUN 2 (2025-12-05 10:47:28) =====
+container "dc5a38a056cbc8527f805e78d35ec74a7d77e2f9c7dc330c3c3b9c6d9d3feb55" exited with status code 0
 
 
-Timing summary: preprocess=0.283s | total_training=22.775s | avg_epoch=0.228s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.180s | preprocess=0.282s | total_training=22.931s | avg_epoch=0.229s
+Coordinator: sent SHUTDOWN to all workers
 
-===== RUN 4 (2025-11-22 16:48:46) =====
-container "de2ac77f733e5f2be01eee5ed58c7af2046059048b09e898fa4abd485136cb50" exited with status code 0
-
-
-Timing summary: preprocess=0.309s | total_training=23.722s | avg_epoch=0.237s
-Coordinator: sent SHUTDOWN to workers
-
-===== RUN 5 (2025-11-22 16:49:17) =====
-container "1ac5d784c669ffd0105154143bc5cb7cb3157b041b3ea78d1163f432c77ce447" exited with status code 0
+===== RUN 3 (2025-12-05 10:47:58) =====
+container "8cfd685be0c00c5c8f1f37b32873f3abbe50f0de8e64a73fe0718efe29e297ac" exited with status code 0
 
 
-Timing summary: preprocess=0.276s | total_training=22.292s | avg_epoch=0.223s
-Coordinator: sent SHUTDOWN to workers
+Timing summary: handshake=0.183s | preprocess=0.288s | total_training=23.373s | avg_epoch=0.234s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 4 (2025-12-05 10:48:29) =====
+container "83f931f1c1a71b127666caf3d6a8d3fac2dbd094b5ab6e11a89a3b851b4ce048" exited with status code 0
+
+
+Timing summary: handshake=0.155s | preprocess=0.315s | total_training=23.453s | avg_epoch=0.235s
+Coordinator: sent SHUTDOWN to all workers
+
+===== RUN 5 (2025-12-05 10:49:00) =====
+container "0893edc35d6952d596f5c9fcf23a4e0a131f7985a2e785bca8faf51852823d10" exited with status code 0
+
+
+Timing summary: handshake=0.162s | preprocess=0.296s | total_training=23.272s | avg_epoch=0.233s
+Coordinator: sent SHUTDOWN to all workers
+
+
 
 With Attestation (CENSUS-S, 100 epochs, 8 workers)
 ===== RUN 1 (2025-11-22 16:53:11) =====

@@ -25,7 +25,7 @@ SEC_HDR = re.compile(
 )
 
 TIMING_BASELINE = re.compile(
-    r"Timing summary:\s*preprocess=(?P<preprocess>[0-9.]+)s\s*\|\s*total_training=(?P<train>[0-9.]+)s\s*\|\s*avg_epoch=(?P<avg_epoch>[0-9.]+)s",
+    r"Timing summary:\s*handshake=(?P<handshake>[0-9.]+)s\s*\|\s*preprocess=(?P<preprocess>[0-9.]+)s\s*\|\s*total_training=(?P<train>[0-9.]+)s\s*\|\s*avg_epoch=(?P<avg_epoch>[0-9.]+)s",
     re.IGNORECASE,
 )
 
@@ -76,7 +76,7 @@ while i < len(lines):
                     "workers": current["workers"],
                     "mode": "baseline",
                     "run": current["run_index"],
-                    "handshake_s": 0.0,
+                    "handshake_s": float(m["handshake"]),
                     "preprocess_s": float(m["preprocess"]),
                     "training_s": float(m["train"]),
                     "report_generation_s": 0.0,
@@ -125,7 +125,7 @@ df = pd.DataFrame(rows)
 df["total_pipeline_train_s"] = (
         df["handshake_s"] + df["preprocess_s"] + df["training_s"] + df["report_generation_s"]
 )
-df["baseline_like_total_s"] = df["preprocess_s"] + df["training_s"]
+df["baseline_like_total_s"] = df["handshake_s"] + df["preprocess_s"] + df["training_s"]
 
 agg = df.groupby(["epochs", "workers", "mode"]).agg(
     runs=("run", "count"),
@@ -256,7 +256,7 @@ for (e, w) in pairs:
         continue
 
     # Component means
-    b_pre, b_train = b["preprocess_mean"], b["training_mean"]
+    b_hs, b_pre, b_train = b["handshake_mean"], b["preprocess_mean"], b["training_mean"]
     a_hs, a_pre, a_train, a_rep = a["handshake_mean"], a["preprocess_mean"], a["training_mean"], a["report_mean"]
 
     # Totals & 1σ (baseline uses baseline_like_total)
@@ -268,9 +268,10 @@ for (e, w) in pairs:
 
     fig, ax = plt.subplots(figsize=(9, 6))
 
-    # --- Baseline stacked bar (preprocess + training) ---
-    b1 = ax.bar(x_baseline, b_pre, width=0.6, color=C_PRE, label="Preprocess (baseline)")
-    b2 = ax.bar(x_baseline, b_train, width=0.6, bottom=b_pre, color=C_TRAIN, label="Training (baseline)")
+    # --- Baseline stacked bar (handshake + preprocess + training) ---
+    b1 = ax.bar(x_baseline, b_hs, width=0.6, color=C_HS, label="Handshake (baseline)")
+    b2 = ax.bar(x_baseline, b_pre, width=0.6, bottom=b_hs, color=C_PRE, label="Preprocess (baseline)")
+    b3 = ax.bar(x_baseline, b_train, width=0.6, bottom=b_hs + b_pre, color=C_TRAIN, label="Training (baseline)")
     # Error bar on total height
     ax.errorbar([x_baseline], [b_total], yerr=[b_std], fmt="none", capsize=6, elinewidth=2, ecolor="black")
 
@@ -297,11 +298,11 @@ for (e, w) in pairs:
 
     # Legend (clean + non-duplicative)
     legend_handles = [
+        Patch(facecolor=C_HS, label="Handshake"),
         Patch(facecolor=C_PRE, label="Preprocess (baseline)"),
         Patch(facecolor=C_PRE, hatch="//", edgecolor="black", label="Preprocess (attested)"),
         Patch(facecolor=C_TRAIN, label="Training (baseline)"),
         Patch(facecolor=C_TRAIN, hatch="\\\\", edgecolor="black", label="Training (attested)"),
-        Patch(facecolor=C_HS, label="Handshake"),
         Patch(facecolor=C_REP, label="Report gen"),
     ]
     ax.legend(handles=legend_handles, loc="upper left", frameon=True)
