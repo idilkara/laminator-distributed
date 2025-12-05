@@ -116,15 +116,24 @@ df.to_csv(per_run_path, index=False)
 agg = df.groupby(["model", "mode"]).agg(
     runs=("run", "count"),
     handshake_mean_s=("handshake_s", "mean"),
+    handshake_std_s=("handshake_s", "std"),
     preprocess_mean_s=("preprocess_s", "mean"),
+    preprocess_std_s=("preprocess_s", "std"),
     gradient_mean_s=("gradient_s", "mean"),
+    gradient_std_s=("gradient_s", "std"),
     crypto_mean_s=("crypto_total_s", "mean"),
     hash_mean_s=("hashing_total_s", "mean"),
+    hash_std_s=("hashing_total_s", "std"),
     envelope_verify_mean_s=("envelope_verify_total_s", "mean"),
+    envelope_verify_std_s=("envelope_verify_total_s", "std"),
     hash_verify_mean_s=("hash_verify_total_s", "mean"),
+    hash_verify_std_s=("hash_verify_total_s", "std"),
     envelope_sign_mean_s=("envelope_sign_total_s", "mean"),
+    envelope_sign_std_s=("envelope_sign_total_s", "std"),
     report_mean_s=("report_generation_s", "mean"),
+    report_std_s=("report_generation_s", "std"),
     pipeline_total_mean_s=("pipeline_total_s", "mean"),
+    pipeline_total_std_s=("pipeline_total_s", "std"),
 ).reset_index()
 
 agg_path = BASE_DIR / "performance_breakdown_agg.csv"
@@ -182,6 +191,11 @@ def plot_bar(model, mode, subset):
     plt.title(f"{model} ({mode}) — subcomponent breakdown")
     plt.grid(axis="y", linestyle="--", alpha=0.4)
     plt.legend(handles=handles, loc="upper left", frameon=True)
+
+    # Error bar on total pipeline height
+    total_mean = float(means["pipeline_total_mean_s"])
+    total_std = float(means.get("pipeline_total_std_s", 0.0) or 0.0)
+    plt.errorbar([x], [total_mean], yerr=[total_std], fmt="none", capsize=6, elinewidth=2, ecolor="black")
 
     plt.tight_layout()
     out_path = fig_dir / f"{model.lower()}_{mode}_breakdown.png"
@@ -247,6 +261,11 @@ def plot_grid(all_rows: pd.DataFrame):
         ax.set_ylim(0, model_ymax.get(model, all_rows["pipeline_total_mean_s"].max() * 1.15))
         if idx % 2 == 0:  # left column
             ax.set_ylabel("Time (s)")
+
+        # Error bar on total pipeline height
+        total_mean = float(r["pipeline_total_mean_s"])
+        total_std = float(r.get("pipeline_total_std_s", 0.0) or 0.0)
+        ax.errorbar([0.0], [total_mean], yerr=[total_std], fmt="none", capsize=5, elinewidth=2, ecolor="black")
 
     fig.legend(handles=legend_handles, loc="upper center", ncol=4, frameon=True, bbox_to_anchor=(0.5, 1.00))
     fig.suptitle("Subcomponent breakdown (mean) — shared Y-axis", y=1.05)
